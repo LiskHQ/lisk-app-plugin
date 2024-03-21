@@ -1,5 +1,8 @@
-[![Ensure compliance with Ledger guidelines](https://github.com/LiskHQ/lisk-app-plugin/actions/workflows/guidelines_enforcer.yml/badge.svg?branch=develop)](https://github.com/LiskHQ/lisk-app-plugin/actions/workflows/guidelines_enforcer.yml)
-[![Compilation & tests](https://github.com/LiskHQ/lisk-app-plugin/actions/workflows/build_and_functional_tests.yml/badge.svg?branch=develop)](https://github.com/LiskHQ/lisk-app-plugin/actions/workflows/build_and_functional_tests.yml)
+![GitHub repo size](https://img.shields.io/github/repo-size/liskhq/lisk-app-plugin)
+![GitHub issues](https://img.shields.io/github/issues-raw/liskhq/lisk-app-plugin)
+![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/liskhq/lisk-app-plugin)
+[![Ensure compliance with Ledger guidelines](https://github.com/liskhq/lisk-app-plugin/actions/workflows/guidelines_enforcer.yml/badge.svg?branch=develop)](https://github.com/liskhq/lisk-app-plugin/actions/workflows/guidelines_enforcer.yml)
+[![Compilation & tests](https://github.com/liskhq/lisk-app-plugin/actions/workflows/build_and_functional_tests.yml/badge.svg?branch=develop)](https://github.com/liskhq/lisk-app-plugin/actions/workflows/build_and_functional_tests.yml)
 
 
 # Lisk App Plugin
@@ -26,7 +29,7 @@ Smart contracts covered by this plugin are:
 
 | Network | Smart Contract Name | Address                                      | Selectors                                                                                                     |
 |---------|---------------------|----------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| Lisk Sepolia     | ERC1967Proxy          | `0x5c3a68B5C635Ce0DA7648C30A1B83A61C376bd87` | TODO |    
+| Lisk Sepolia Testnet     | ERC1967Proxy          | `0x5c3a68B5C635Ce0DA7648C30A1B83A61C376bd87` | TODO |    
 
 ## Ethereum SDK
 
