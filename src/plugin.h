@@ -26,8 +26,8 @@
 //     - an enum named selector_t with every NAME
 //     - a map named SELECTORS associating each NAME with it's value
 #define SELECTORS_LIST(X)                    \
-    X(SWAP_EXACT_ETH_FOR_TOKENS, 0x7ff36ab5) \
-    X(BOILERPLATE_DUMMY_2, 0x13374242)
+    X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d) \
+    X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68) \
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -48,11 +48,12 @@ extern const uint32_t SELECTORS[SELECTOR_COUNT];
 // Enumeration used to parse the smart contract data.
 // EDIT THIS: Adapt the parameter names here.
 typedef enum {
-    MIN_AMOUNT_RECEIVED = 0,
-    TOKEN_RECEIVED,
-    BENEFICIARY,
-    PATH_OFFSET,
-    PATH_LENGTH,
+    // Claim regular account paramters
+    PROOF,
+    PUBLIC_KEY,
+    CLAIM_AMOUNT,
+    RECIPIENT,
+    ED25519_SIGNATURE,
     UNEXPECTED_PARAMETER,
 } parameter;
 
