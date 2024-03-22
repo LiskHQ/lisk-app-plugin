@@ -62,8 +62,9 @@ typedef enum {
 // will need to adapt this struct to your plugin.
 typedef struct context_s {
     // For display.
-    uint8_t amount_received[INT256_LENGTH];
-    uint8_t beneficiary[ADDRESS_LENGTH];
+    uint8_t claim_amount[INT256_LENGTH];
+    uint8_t recipient[ADDRESS_LENGTH];
+    uint8_t public_key[INT256_LENGTH];
     uint8_t token_received[ADDRESS_LENGTH];
     char ticker[MAX_TICKER_LEN];
     uint8_t decimals;
