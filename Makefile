@@ -16,11 +16,17 @@
 # ****************************************************************************
 
 # EDIT THIS: Application name
-APPNAME = "lisk"
+APPNAME = "Lisk"
 
 # Application version
 APPVERSION_M = 1
 APPVERSION_N = 0
 APPVERSION_P = 0
+
+CURVE_APP_LOAD_PARAMS = <secp256k1> <ed25519>
+PATH_APP_LOAD_PARAMS = "44'/134'"
+
+VARIANT_PARAM = COIN
+VARIANT_VALUES = LSK
 
 include ethereum-plugin-sdk/standard_plugin.mk
