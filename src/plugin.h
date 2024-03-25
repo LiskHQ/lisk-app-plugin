@@ -48,13 +48,20 @@ extern const uint32_t SELECTORS[SELECTOR_COUNT];
 // Enumeration used to parse the smart contract data.
 // EDIT THIS: Adapt the parameter names here.
 typedef enum {
-    // Claim regular account paramters
+    // Common parameters
     PROOF,
-    PUBLIC_KEY,
     CLAIM_AMOUNT,
     RECIPIENT,
-    ED25519_SIGNATURE,
     UNEXPECTED_PARAMETER,
+
+    // Claim regular account parameters
+    PUBLIC_KEY,
+    ED25519_SIGNATURE,
+
+    // Claim multi-sig account parameters
+    MULTISIG_KEYS,
+    LSK_ADDRESS
+    ED25519_SIGNATURES,
 } parameter;
 
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
@@ -65,6 +72,8 @@ typedef struct context_s {
     uint8_t claim_amount[INT256_LENGTH];
     uint8_t recipient[ADDRESS_LENGTH];
     uint8_t public_key[INT256_LENGTH];
+    uint8_t lsk_address[ADDRESS_LENGTH];
+
     uint8_t token_received[ADDRESS_LENGTH];
     char ticker[MAX_TICKER_LEN];
     uint8_t decimals;

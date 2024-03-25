@@ -44,6 +44,9 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
         case CLAIM_REGULAR_ACCOUNT:
             context->next_param = PROOF;
             break;
+        case CLAIM_MULTI_SIGNATURE_ACCOUNT:
+            context->next_param = PROOF;
+            break;
         // Keep this
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);

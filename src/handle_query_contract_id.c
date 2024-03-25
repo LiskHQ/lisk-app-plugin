@@ -11,7 +11,10 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
 
     // EDIT THIS: Adapt the cases by modifying the strings you pass to `strlcpy`.
     if (context->selectorIndex == CLAIM_REGULAR_ACCOUNT) {
-        strlcpy(msg->version, "Claim", msg->versionLength);
+        strlcpy(msg->version, "Claim LSK", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == CLAIM_MULTI_SIGNATURE_ACCOUNT) {
+        strlcpy(msg->version, "Claim LSK", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
         PRINTF("Selector index: %d not supported\n", context->selectorIndex);
