@@ -13,18 +13,14 @@ static void handle_claim_regular_account(ethPluginProvideParameter_t *msg, conte
             context->next_param = PUBLIC_KEY;
             break;
         case PUBLIC_KEY:  // _pubKey
-            copy_parameter(context->public_key,
-                       sizeof(context->public_key),
-                       msg->parameter);
+            copy_parameter(context->public_key, sizeof(context->public_key), msg->parameter);
             context->next_param = CLAIM_AMOUNT;
             break;
         case CLAIM_AMOUNT:  // _amount
-            copy_parameter(context->claim_amount,
-                       sizeof(context->claim_amount),
-                       msg->parameter);
+            copy_parameter(context->claim_amount, sizeof(context->claim_amount), msg->parameter);
             context->next_param = RECIPIENT;
             break;
-        case RECIPIENT: // _recipient
+        case RECIPIENT:  // _recipient
             copy_address(context->recipient, msg->parameter, sizeof(context->recipient));
             context->next_param = ED25519_SIGNATURE;
             break;
@@ -56,16 +52,14 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
             context->next_param = CLAIM_AMOUNT;
             break;
         case CLAIM_AMOUNT:  // _amount
-            copy_parameter(context->claim_amount,
-                       sizeof(context->claim_amount),
-                       msg->parameter);
+            copy_parameter(context->claim_amount, sizeof(context->claim_amount), msg->parameter);
             context->next_param = MULTISIG_KEYS;
             break;
         // TODO: Verify if we want to show multi-sig account keys on device
         case MULTISIG_KEYS:  // _keys
             context->next_param = RECIPIENT;
             break;
-        case RECIPIENT: // _recipient
+        case RECIPIENT:  // _recipient
             copy_address(context->recipient, msg->parameter, sizeof(context->recipient));
             context->next_param = ED25519_SIGNATURE;
             break;

@@ -20,14 +20,16 @@
 #include <string.h>
 #include "eth_plugin_interface.h"
 
+#define PUBLIC_KEY_LENGTH 32
+
 // All possible selectors of your plugin.
 // EDIT THIS: Enter your selectors here, in the format X(NAME, value)
 // A Xmacro below will create for you:
 //     - an enum named selector_t with every NAME
 //     - a map named SELECTORS associating each NAME with it's value
-#define SELECTORS_LIST(X)                    \
+#define SELECTORS_LIST(X)                \
     X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d) \
-    X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68) \
+    X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68)
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -60,7 +62,7 @@ typedef enum {
 
     // Claim multi-sig account parameters
     MULTISIG_KEYS,
-    LSK_ADDRESS
+    LSK_ADDRESS,
     ED25519_SIGNATURES,
 } parameter;
 
@@ -71,7 +73,7 @@ typedef struct context_s {
     // For display.
     uint8_t claim_amount[INT256_LENGTH];
     uint8_t recipient[ADDRESS_LENGTH];
-    uint8_t public_key[INT256_LENGTH];
+    uint8_t public_key[PUBLIC_KEY_LENGTH];
     uint8_t lsk_address[ADDRESS_LENGTH];
 
     uint8_t token_received[ADDRESS_LENGTH];
