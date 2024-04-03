@@ -14,89 +14,154 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 # ****************************************************************************
-# ifeq ($(BOLOS_SDK),)
-# $(error Environment variable BOLOS_SDK is not set)
-# endif
 
-# include $(BOLOS_SDK)/Makefile.defines
+ifeq ($(BOLOS_SDK),)
+$(error Environment variable BOLOS_SDK is not set)
+endif
 
+include $(BOLOS_SDK)/Makefile.defines
 
-# APP_LOAD_PARAMS = --curve ed25519
-# ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
-# APP_LOAD_PARAMS += --appFlags 0x200
-# else
-# APP_LOAD_PARAMS += --appFlags 0x000
-# endif
-# APP_LOAD_PARAMS += --path "44'/134'"
-# APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
+APP_LOAD_PARAMS = --curve ed25519
+ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
+APP_LOAD_PARAMS += --appFlags 0x200
+else
+APP_LOAD_PARAMS += --appFlags 0x000
+endif
+APP_LOAD_PARAMS += --path "44'/134'"
+APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
+
+APPVERSION_M     = 1
+APPVERSION_N     = 0
+APPVERSION_P     = 0
+APPVERSION       = $(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 APPNAME = "Lisk"
 
-# Application version
-APPVERSION_M = 1
-APPVERSION_N = 0
-APPVERSION_P = 0
+ifeq ($(TARGET_NAME), TARGET_NANOS)
+ICONNAME=icons/nanos_app_lisk.gif
+else ifeq ($(TARGET_NAME), TARGET_STAX)
+ICONNAME=icons/stax_app_lisk.gif
+DEFINES += ICONGLYPH=C_stax_lisk_64px
+DEFINES += ICONBITMAP=C_stax_lisk_64px_bitmap
+GLYPH_FILES += $(ICONNAME)
+else
+ICONNAME=icons/nanox_app_lisk.gif
+endif
 
-include ethereum-plugin-sdk/standard_plugin.mk
+all: default
 
-# ifeq ($(TARGET_NAME),TARGET_NANOS)
-#     ICONNAME=icons/nanos_app_lisk.gif
-# else ifeq ($(TARGET_NAME),TARGET_STAX)
-#     ICONNAME=icons/stax_app_lisk.gif
-# else
-#     ICONNAME=icons/nanox_app_lisk.gif
-# endif
+# Platform
+DEFINES   += OS_IO_SEPROXYHAL
+DEFINES   += HAVE_SPRINTF
+DEFINES   += LEDGER_MAJOR_VERSION=$(APPVERSION_M) LEDGER_MINOR_VERSION=$(APPVERSION_N) LEDGER_PATCH_VERSION=$(APPVERSION_P)
+DEFINES   += IO_HID_EP_LENGTH=64
 
-# all: default
+DEFINES   += UNUSED\(x\)=\(void\)x
+DEFINES   += APPVERSION=\"$(APPVERSION)\"
+CFLAGS    += -DAPPNAME=\"$(APPNAME)\"
 
-# #  Compiler
-# ifneq ($(BOLOS_ENV),)
-# $(info BOLOS_ENV=$(BOLOS_ENV))
-# CLANGPATH := $(BOLOS_ENV)/clang-arm-fropi/bin/
-# GCCPATH   := $(BOLOS_ENV)/gcc-arm-none-eabi-5_3-2016q1/bin/
-# else
-# $(info BOLOS_ENV is not set: falling back to CLANGPATH and GCCPATH)
-# endif
-# ifeq ($(CLANGPATH),)
-# $(info CLANGPATH is not set: clang will be used from PATH)
-# endif
-# ifeq ($(GCCPATH),)
-# $(info GCCPATH is not set: arm-none-eabi-* will be used from PATH)
-# endif
+ifneq (,$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
+DEFINES   += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000
+DEFINES   += HAVE_BLE_APDU
+endif
 
-# CC      := $(CLANGPATH)clang
-# CFLAGS  += -O3 -Os
-# AS      := $(GCCPATH)arm-none-eabi-gcc
-# LD      := $(GCCPATH)arm-none-eabi-gcc
-# LDFLAGS += -O3 -Os
-# LDLIBS  += -lm -lgcc -lc
 
-# include $(BOLOS_SDK)/Makefile.glyphs
+ifeq ($(TARGET_NAME),TARGET_NANOS)
+DEFINES   += IO_SEPROXYHAL_BUFFER_SIZE_B=128
+else
+DEFINES   += IO_SEPROXYHAL_BUFFER_SIZE_B=300
+endif
 
-# # Variables required by the makefile.rules of the SDK
-# APP_SOURCE_PATH += src
-# SDK_SOURCE_PATH += lib_stusb lib_stusb_impl
+ifneq  ($(TARGET_NAME),TARGET_STAX)
+DEFINES   += HAVE_BAGL
+ifneq ($(TARGET_NAME),TARGET_NANOS)
+DEFINES   += HAVE_GLO096
+DEFINES   += HAVE_BAGL BAGL_WIDTH=128 BAGL_HEIGHT=64
+DEFINES   += HAVE_BAGL_ELLIPSIS
+DEFINES   += HAVE_BAGL_FONT_OPEN_SANS_REGULAR_11PX
+DEFINES   += HAVE_BAGL_FONT_OPEN_SANS_EXTRABOLD_11PX
+DEFINES   += HAVE_BAGL_FONT_OPEN_SANS_LIGHT_16PX
+DEFINES   += HAVE_UX_FLOW
+endif
+endif
 
-# ifneq ($(TARGET_NAME),TARGET_STAX)
-# SDK_SOURCE_PATH  += lib_ux
-# endif
+SPECULOS:= 0
+ifneq ($(SPECULOS), 0)
+DEFINES += SPECULOS
+DEBUG := 10
+endif
 
-# ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
-#     SDK_SOURCE_PATH += lib_blewbxx lib_blewbxx_impl
-# endif
+ifneq ($(DEBUG),0)
+	DEFINES += HAVE_STACK_OVERFLOW_CHECK
+	SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl
+	DEFINES   += HAVE_IO_USB HAVE_L4_USBLIB IO_USB_MAX_ENDPOINTS=4 IO_HID_EP_LENGTH=64 HAVE_USB_APDU
 
-# load: all
-# 	python3 -m ledgerblue.loadApp $(APP_LOAD_PARAMS)
+        ifeq ($(DEBUG),10)
+                $(warning Using semihosted PRINTF. Only run with speculos!)
+                CFLAGS    += -include src/dbg/debug.h
+                DEFINES   += HAVE_PRINTF PRINTF=semihosted_printf
+        else
+                ifeq ($(TARGET_NAME),TARGET_NANOX)
+                        DEFINES   += HAVE_PRINTF PRINTF=mcu_usb_printf
+                else
+                        DEFINES   += HAVE_PRINTF PRINTF=screen_printf
+                endif
 
-# load-offline: all
-# 	python3 -m ledgerblue.loadApp $(APP_LOAD_PARAMS) --offline
+        endif
+else
+        DEFINES   += PRINTF\(...\)=
+endif
 
-# delete:
-# 	python3 -m ledgerblue.deleteApp $(COMMON_DELETE_PARAMS)
+#  Compiler
+ifneq ($(BOLOS_ENV),)
+$(info BOLOS_ENV=$(BOLOS_ENV))
+CLANGPATH := $(BOLOS_ENV)/clang-arm-fropi/bin/
+GCCPATH := $(BOLOS_ENV)/gcc-arm-none-eabi-5_3-2016q1/bin/
+else
+$(info BOLOS_ENV is not set: falling back to CLANGPATH and GCCPATH)
+endif
+ifeq ($(CLANGPATH),)
+$(info CLANGPATH is not set: clang will be used from PATH)
+endif
+ifeq ($(GCCPATH),)
+$(info GCCPATH is not set: arm-none-eabi-* will be used from PATH)
+endif
 
-# include $(BOLOS_SDK)/Makefile.rules
+CC       := $(CLANGPATH)clang
 
-# dep/%.d: %.c Makefile
+AS     := $(GCCPATH)arm-none-eabi-gcc
 
-# listvariants:
-# 	@echo VARIANTS COIN LSK
+LD       := $(GCCPATH)arm-none-eabi-gcc
+LDLIBS   += -lm -lgcc -lc
+
+# Import rules to compile glyphs(/pone)
+include $(BOLOS_SDK)/Makefile.glyphs
+
+APP_SOURCE_PATH  += src ethereum-plugin-sdk
+ifneq ($(TARGET_NAME), TARGET_STAX)
+SDK_SOURCE_PATH  += lib_ux
+endif
+ifneq (,$(findstring HAVE_BLE,$(DEFINES)))
+SDK_SOURCE_PATH  += lib_blewbxx lib_blewbxx_impl
+endif
+
+# Initialize plugin SDK submodule if needed
+ifneq ($(shell git submodule status | grep '^[-+]'),)
+$(info INFO: Need to reinitialize git submodules)
+$(shell git submodule update --init)
+endif
+
+load: all
+	python3 -m ledgerblue.loadApp $(APP_LOAD_PARAMS)
+
+delete:
+	python3 -m ledgerblue.deleteApp $(COMMON_DELETE_PARAMS)
+
+# Import generic rules from the sdk
+include $(BOLOS_SDK)/Makefile.rules
+
+
+dep/%.d: %.c Makefile
+
+listvariants:
+	@echo VARIANTS COIN LSK
