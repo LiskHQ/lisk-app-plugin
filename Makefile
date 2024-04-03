@@ -29,7 +29,6 @@ endif
 APP_LOAD_PARAMS += --path "44'/134'"
 APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
-# EDIT THIS: Application name
 APPNAME = "Lisk"
 
 # Application version
@@ -48,90 +47,41 @@ endif
 
 all: default
 
-DEFINES += $(DEFINES_LIB)
-CFLAGS += -DAPPNAME=\"$(APPNAME)\"
-DEFINES += APPVERSION=\"$(APPVERSION)\"
-DEFINES += MAJOR_VERSION=$(APPVERSION_M) MINOR_VERSION=$(APPVERSION_N) PATCH_VERSION=$(APPVERSION_P)
-DEFINES += OS_IO_SEPROXYHAL
-DEFINES += HAVE_SPRINTF
-DEFINES += HAVE_IO_USB HAVE_L4_USBLIB IO_USB_MAX_ENDPOINTS=6 IO_HID_EP_LENGTH=64 HAVE_USB_APDU
-DEFINES += USB_SEGMENT_SIZE=64
-DEFINES += BLE_SEGMENT_SIZE=32
-DEFINES += HAVE_WEBUSB WEBUSB_URL_SIZE_B=0 WEBUSB_URL=""
+#  Compiler
+ifneq ($(BOLOS_ENV),)
+$(info BOLOS_ENV=$(BOLOS_ENV))
+CLANGPATH := $(BOLOS_ENV)/clang-arm-fropi/bin/
+GCCPATH   := $(BOLOS_ENV)/gcc-arm-none-eabi-5_3-2016q1/bin/
+else
+$(info BOLOS_ENV is not set: falling back to CLANGPATH and GCCPATH)
+endif
+ifeq ($(CLANGPATH),)
+$(info CLANGPATH is not set: clang will be used from PATH)
+endif
+ifeq ($(GCCPATH),)
+$(info GCCPATH is not set: arm-none-eabi-* will be used from PATH)
+endif
 
-# Bluetooth
+CC      := $(CLANGPATH)clang
+CFLAGS  += -O3 -Os
+AS      := $(GCCPATH)arm-none-eabi-gcc
+LD      := $(GCCPATH)arm-none-eabi-gcc
+LDFLAGS += -O3 -Os
+LDLIBS  += -lm -lgcc -lc
+
+include $(BOLOS_SDK)/Makefile.glyphs
+
+# Variables required by the makefile.rules of the SDK
+APP_SOURCE_PATH += src
+SDK_SOURCE_PATH += lib_stusb lib_stusb_impl
+
+ifneq ($(TARGET_NAME),TARGET_STAX)
+SDK_SOURCE_PATH  += lib_ux
+endif
+
 ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
-    DEFINES += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000 HAVE_BLE_APDU
+    SDK_SOURCE_PATH += lib_blewbxx lib_blewbxx_impl
 endif
-
-# Screen size
-ifeq ($(TARGET_NAME),TARGET_NANOS)
-    DEFINES += IO_SEPROXYHAL_BUFFER_SIZE_B=128
-else
-    DEFINES += IO_SEPROXYHAL_BUFFER_SIZE_B=300
-endif
-
-# Graphical lib
-ifeq ($(TARGET_NAME),TARGET_STAX)
-    DEFINES += NBGL_QRCODE
-    SDK_SOURCE_PATH += qrcode
-else
-    DEFINES += HAVE_BAGL HAVE_UX_FLOW
-    ifneq ($(TARGET_NAME),TARGET_NANOS)
-        DEFINES += HAVE_GLO096
-        DEFINES += BAGL_WIDTH=128 BAGL_HEIGHT=64
-        DEFINES += HAVE_BAGL_ELLIPSIS # long label truncation feature
-        DEFINES += HAVE_BAGL_FONT_OPEN_SANS_REGULAR_11PX
-        DEFINES += HAVE_BAGL_FONT_OPEN_SANS_EXTRABOLD_11PX
-        DEFINES += HAVE_BAGL_FONT_OPEN_SANS_LIGHT_16PX
-    endif
-endif
-
-DEBUG = 0
-ifneq ($(DEBUG),0)
-    DEFINES += HAVE_PRINTF
-    ifeq ($(TARGET_NAME),TARGET_NANOS)
-        DEFINES += PRINTF=screen_printf
-    else
-        DEFINES += PRINTF=mcu_usb_printf
-    endif
-else
-        DEFINES += PRINTF\(...\)=
-endif
-
-# ifneq ($(BOLOS_ENV),)
-# $(info BOLOS_ENV=$(BOLOS_ENV))
-# CLANGPATH := $(BOLOS_ENV)/clang-arm-fropi/bin/
-# GCCPATH   := $(BOLOS_ENV)/gcc-arm-none-eabi-5_3-2016q1/bin/
-# else
-# $(info BOLOS_ENV is not set: falling back to CLANGPATH and GCCPATH)
-# endif
-# ifeq ($(CLANGPATH),)
-# $(info CLANGPATH is not set: clang will be used from PATH)
-# endif
-# ifeq ($(GCCPATH),)
-# $(info GCCPATH is not set: arm-none-eabi-* will be used from PATH)
-# endif
-
-# CC      := $(CLANGPATH)clang
-# CFLAGS  += -O3 -Os
-# AS      := $(GCCPATH)arm-none-eabi-gcc
-# LD      := $(GCCPATH)arm-none-eabi-gcc
-# LDFLAGS += -O3 -Os
-# LDLIBS  += -lm -lgcc -lc
-
-# include $(BOLOS_SDK)/Makefile.glyphs
-
-# APP_SOURCE_PATH += src
-# SDK_SOURCE_PATH += lib_stusb lib_stusb_impl
-
-# ifneq ($(TARGET_NAME),TARGET_STAX)
-# SDK_SOURCE_PATH  += lib_ux
-# endif
-
-# ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
-#     SDK_SOURCE_PATH += lib_blewbxx lib_blewbxx_impl
-# endif
 
 load: all
 	python3 -m ledgerblue.loadApp $(APP_LOAD_PARAMS)
