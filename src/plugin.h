@@ -20,15 +20,18 @@
 #include <string.h>
 #include "eth_plugin_interface.h"
 
-#define PUBLIC_KEY_LENGTH 32
+#define PUBLIC_KEY_LENGTH   32
+#define LISK_ADDRESS_LENGTH 20
 
 // All possible selectors of your plugin.
 // EDIT THIS: Enter your selectors here, in the format X(NAME, value)
 // A Xmacro below will create for you:
 //     - an enum named selector_t with every NAME
 //     - a map named SELECTORS associating each NAME with it's value
-#define SELECTORS_LIST(X)                \
-    X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d) \
+#define SELECTORS_LIST(X)                    \
+    X(SWAP_EXACT_ETH_FOR_TOKENS, 0x7ff36ab5) \
+    X(BOILERPLATE_DUMMY_2, 0x13374242)       \
+    X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d)     \
     X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68)
 
 // Xmacro helpers to define the enum and map
@@ -50,11 +53,18 @@ extern const uint32_t SELECTORS[SELECTOR_COUNT];
 // Enumeration used to parse the smart contract data.
 // EDIT THIS: Adapt the parameter names here.
 typedef enum {
+    // Swap ETH
+    MIN_AMOUNT_RECEIVED = 0,
+    TOKEN_RECEIVED,
+    BENEFICIARY,
+    PATH_OFFSET,
+    PATH_LENGTH,
+    UNEXPECTED_PARAMETER,
+
     // Common parameters
     PROOF,
     CLAIM_AMOUNT,
     RECIPIENT,
-    UNEXPECTED_PARAMETER,
 
     // Claim regular account parameters
     PUBLIC_KEY,
@@ -74,8 +84,10 @@ typedef struct context_s {
     uint8_t claim_amount[INT256_LENGTH];
     uint8_t recipient[ADDRESS_LENGTH];
     uint8_t public_key[PUBLIC_KEY_LENGTH];
-    uint8_t lsk_address[ADDRESS_LENGTH];
+    uint8_t lsk_address[LISK_ADDRESS_LENGTH];
 
+    uint8_t amount_received[INT256_LENGTH];
+    uint8_t beneficiary[ADDRESS_LENGTH];
     uint8_t token_received[ADDRESS_LENGTH];
     char ticker[MAX_TICKER_LEN];
     uint8_t decimals;
