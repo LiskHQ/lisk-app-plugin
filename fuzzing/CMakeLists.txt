@@ -35,9 +35,9 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 # compatible with ClusterFuzzLite
 if (NOT DEFINED ENV{LIB_FUZZING_ENGINE})
     set(COMPILATION_FLAGS_ "-fsanitize=fuzzer,address,undefined,signed-integer-overflow")
-else()    
+else()
     set(COMPILATION_FLAGS_ "$ENV{LIB_FUZZING_ENGINE} $ENV{CFLAGS}")
-endif()    
+endif()
 string(REPLACE " " ";" COMPILATION_FLAGS ${COMPILATION_FLAGS_})
 
 add_compile_options(-Wall -Wextra -g -pedantic)
@@ -95,6 +95,9 @@ add_executable(fuzz
     # Ethereum SDK
     ${ETH_DIR}/src/common_utils.c
     ${ETH_DIR}/src/plugin_utils.c
+
+    # sdk utils
+    ${BOLOS_SDK}/src/ledger_assert.c
 
     # cxng
     ${BOLOS_SDK}/lib_cxng/src/cx_hash.c

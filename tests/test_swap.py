@@ -43,11 +43,10 @@ def test_swap_exact_eth_for_token(backend, firmware, navigator, test_name, walle
     ])
 
     # first setup the external plugin
-    with client.set_external_plugin(PLUGIN_NAME,
-                                    contract.address,
-                                    # Extract function selector from the encoded data
-                                    get_selector_from_data(data)):
-        pass
+    client.set_external_plugin(PLUGIN_NAME,
+                               contract.address,
+                               # Extract function selector from the encoded data
+                               get_selector_from_data(data))
 
     tx_params = {
         "nonce": 20,

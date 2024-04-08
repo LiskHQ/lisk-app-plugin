@@ -61,7 +61,6 @@ static bool set_beneficiary_ui(ethQueryContractUI_t *msg, context_t *context) {
     return getEthAddressStringFromBinary(
         context->beneficiary,
         msg->msg + 2,  // +2 here because we've already prefixed with '0x'.
-        msg->pluginSharedRW->sha3,
         chainid);
 }
 

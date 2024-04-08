@@ -1,10 +1,13 @@
-[![Ensure compliance with Ledger guidelines](https://github.com/LedgerHQ/app-plugin-boilerplate/actions/workflows/guidelines_enforcer.yml/badge.svg?branch=develop)](https://github.com/LedgerHQ/app-plugin-boilerplate/actions/workflows/guidelines_enforcer.yml)
-[![Compilation & tests](https://github.com/LedgerHQ/app-plugin-boilerplate/actions/workflows/build_and_functional_tests.yml/badge.svg?branch=develop)](https://github.com/LedgerHQ/app-plugin-boilerplate/actions/workflows/build_and_functional_tests.yml)
+![GitHub repo size](https://img.shields.io/github/repo-size/liskhq/lisk-app-plugin)
+![GitHub issues](https://img.shields.io/github/issues-raw/liskhq/lisk-app-plugin)
+![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/liskhq/lisk-app-plugin)
+[![Ensure compliance with Ledger guidelines](https://github.com/liskhq/lisk-app-plugin/actions/workflows/guidelines_enforcer.yml/badge.svg?branch=develop)](https://github.com/liskhq/lisk-app-plugin/actions/workflows/guidelines_enforcer.yml)
+[![Compilation & tests](https://github.com/liskhq/lisk-app-plugin/actions/workflows/build_and_functional_tests.yml/badge.svg?branch=develop)](https://github.com/liskhq/lisk-app-plugin/actions/workflows/build_and_functional_tests.yml)
 
 
-# app-plugin-boilerplate
+# Lisk App Plugin
 
-This repo is meant to be a forkable example of a plugin.
+Lisk App Plugin is a plugin for the Ethereum application specific to support lisk smart contracts. It helps parsing and displaying relevant information when signing transaction.
 
 Plugins are lightweight applications that go hand-in-hand with the Ethereum
 Application on a Nano (S, S plus, X) and Stax devices.
@@ -19,6 +22,14 @@ developers are expected to adapt the code to their own needs.
 It is STRONGLY recommended to follow the
 [plugin guide](https://developers.ledger.com/docs/dapp/embedded-plugin/code-overview/)
 in order to better understand the flow and the context for plugins.
+
+## Smart Contracts
+
+Smart contracts covered by this plugin are:
+
+| Network | Smart Contract Name | Address                                      | Selectors                                                                                                     |
+|---------|---------------------|----------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| Lisk Sepolia Testnet     | ERC1967Proxy          | `0x5c3a68B5C635Ce0DA7648C30A1B83A61C376bd87` | TODO |    
 
 ## Ethereum SDK
 
