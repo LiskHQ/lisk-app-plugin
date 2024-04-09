@@ -13,8 +13,6 @@ from .utils import WalletAddr
 
 configuration.OPTIONAL.MAIN_APP_DIR = "tests/.test_dependencies/"
 
-configuration.OPTIONAL.LOAD_MAIN_APP_AS_LIBRARY = True
-
 configuration.OPTIONAL.BACKEND_SCOPE = "class"
 
 
