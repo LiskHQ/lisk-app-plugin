@@ -23,14 +23,6 @@ It is STRONGLY recommended to follow the
 [plugin guide](https://developers.ledger.com/docs/dapp/embedded-plugin/code-overview/)
 in order to better understand the flow and the context for plugins.
 
-## Smart Contracts
-
-Smart contracts covered by this plugin are:
-
-| Network | Smart Contract Name | Address                                      | Selectors                                                                                                     |
-|---------|---------------------|----------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| Lisk Sepolia Testnet     | ERC1967Proxy          | `0x5c3a68B5C635Ce0DA7648C30A1B83A61C376bd87` | TODO |    
-
 ## Ethereum SDK
 
 Ethereum plugins need the [Ethereum SDK](https://github.com/LedgerHQ/ethereum-plugin-sdk).
@@ -44,7 +36,7 @@ the code is compiled and tested on the latest version of the SDK.
 
 ## Documentation
 
-The documentation about the plugin shall be added in [PLUGIN_SPECIFICATON.md](https://github.com/LedgerHQ/app-plugin-boilerplate/blob/develop/PLUGIN_SPECIFICATION.md). It shall includes at least the smart contracts and functions supported by the plugin.
+The documentation about the plugin can be found in [PLUGIN_SPECIFICATON.md](https://github.com/LedgerHQ/app-plugin-boilerplate/blob/develop/PLUGIN_SPECIFICATION.md).
 
 ## Formatting
 

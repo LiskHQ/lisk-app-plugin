@@ -41,12 +41,12 @@ static void handle_swap_exact_eth_for_tokens(ethPluginProvideParameter_t *msg, c
 }
 
 static void handle_claim_regular_account(ethPluginProvideParameter_t *msg, context_t *context) {
-    if (context->go_to_offset) {
-        if (msg->parameterOffset != context->offset + SELECTOR_SIZE) {
-            return;
-        }
-        context->go_to_offset = false;
-    }
+    // if (context->go_to_offset) {
+    //     if (msg->parameterOffset != context->offset + SELECTOR_SIZE) {
+    //         return;
+    //     }
+    //     context->go_to_offset = false;
+    // }
     switch (context->next_param) {
         // TODO: Verify if we want to show proof on device
         case PROOF:  // _proof
@@ -76,12 +76,12 @@ static void handle_claim_regular_account(ethPluginProvideParameter_t *msg, conte
 }
 
 static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, context_t *context) {
-    if (context->go_to_offset) {
-        if (msg->parameterOffset != context->offset + SELECTOR_SIZE) {
-            return;
-        }
-        context->go_to_offset = false;
-    }
+    // if (context->go_to_offset) {
+    //     if (msg->parameterOffset != context->offset + SELECTOR_SIZE) {
+    //         return;
+    //     }
+    //     context->go_to_offset = false;
+    // }
     switch (context->next_param) {
         // TODO: Verify if we want to show proof on device
         case PROOF:  // _proof
