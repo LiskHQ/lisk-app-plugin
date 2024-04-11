@@ -76,19 +76,27 @@ typedef enum {
     ED25519_SIGNATURES,
 } parameter;
 
+typedef struct {
+    union {
+        struct {
+            uint8_t claim_amount[INT256_LENGTH];
+            uint8_t recipient[ADDRESS_LENGTH];
+            uint8_t public_key[PUBLIC_KEY_LENGTH];
+            uint8_t lsk_address[LISK_ADDRESS_LENGTH];
+        } claim;
+
+        struct {
+            uint8_t amount_received[INT256_LENGTH];
+            uint8_t beneficiary[ADDRESS_LENGTH];
+            uint8_t token_received[ADDRESS_LENGTH];
+        } swap;
+    } body;
+} lisk_t;
+
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
 // EDIT THIS: This struct is used by your plugin to save the parameters you parse. You
 // will need to adapt this struct to your plugin.
 typedef struct context_s {
-    // For display.
-    uint8_t claim_amount[INT256_LENGTH];
-    uint8_t recipient[ADDRESS_LENGTH];
-    uint8_t public_key[PUBLIC_KEY_LENGTH];
-    uint8_t lsk_address[LISK_ADDRESS_LENGTH];
-
-    uint8_t amount_received[INT256_LENGTH];
-    uint8_t beneficiary[ADDRESS_LENGTH];
-    uint8_t token_received[ADDRESS_LENGTH];
     char ticker[MAX_TICKER_LEN];
     uint8_t decimals;
     uint8_t token_found;
@@ -101,6 +109,9 @@ typedef struct context_s {
 
     // For both parsing and display.
     selector_t selectorIndex;
+
+    // lisk related context
+    lisk_t lisk;
 } context_t;
 
 // Check if the context structure will fit in the RAM section ETH will prepare for us

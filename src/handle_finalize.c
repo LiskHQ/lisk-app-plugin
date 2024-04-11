@@ -8,10 +8,10 @@ void handle_finalize(ethPluginFinalize_t *msg) {
 
     switch (context->selectorIndex) {
         case SWAP_EXACT_ETH_FOR_TOKENS:
-            if (memcmp(msg->address, context->beneficiary, ADDRESS_LENGTH) != 0) {
+            if (memcmp(msg->address, context->lisk.body.swap.beneficiary, ADDRESS_LENGTH) != 0) {
                 msg->numScreens += 1;
             }
-            msg->tokenLookup1 = context->token_received;
+            msg->tokenLookup1 = context->lisk.body.swap.token_received;
             break;
         case CLAIM_REGULAR_ACCOUNT:
             break;

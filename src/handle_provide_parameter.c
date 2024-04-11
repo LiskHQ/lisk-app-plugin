@@ -9,9 +9,9 @@ static void handle_swap_exact_eth_for_tokens(ethPluginProvideParameter_t *msg, c
     }
     switch (context->next_param) {
         case MIN_AMOUNT_RECEIVED:  // amountOutMin
-            copy_parameter(context->amount_received,
+            copy_parameter(context->lisk.body.swap.amount_received,
                            msg->parameter,
-                           sizeof(context->amount_received));
+                           sizeof(context->lisk.body.swap.amount_received));
             context->next_param = PATH_OFFSET;
             break;
         case PATH_OFFSET:  // path
@@ -19,7 +19,9 @@ static void handle_swap_exact_eth_for_tokens(ethPluginProvideParameter_t *msg, c
             context->next_param = BENEFICIARY;
             break;
         case BENEFICIARY:  // to
-            copy_address(context->beneficiary, msg->parameter, sizeof(context->beneficiary));
+            copy_address(context->lisk.body.swap.beneficiary,
+                         msg->parameter,
+                         sizeof(context->lisk.body.swap.beneficiary));
             context->next_param = PATH_LENGTH;
             context->go_to_offset = true;
             break;
@@ -29,7 +31,9 @@ static void handle_swap_exact_eth_for_tokens(ethPluginProvideParameter_t *msg, c
             context->next_param = TOKEN_RECEIVED;
             break;
         case TOKEN_RECEIVED:  // path[1] -> contract address of token received
-            copy_address(context->token_received, msg->parameter, sizeof(context->token_received));
+            copy_address(context->lisk.body.swap.token_received,
+                         msg->parameter,
+                         sizeof(context->lisk.body.swap.token_received));
             context->next_param = UNEXPECTED_PARAMETER;
             break;
         // Keep this
@@ -53,20 +57,27 @@ static void handle_claim_regular_account(ethPluginProvideParameter_t *msg, conte
             context->next_param = PUBLIC_KEY;
             break;
         case PUBLIC_KEY:  // _pubKey
-            copy_parameter(context->public_key, msg->parameter, sizeof(context->public_key));
+            copy_parameter(context->lisk.body.claim.public_key,
+                           msg->parameter,
+                           sizeof(context->lisk.body.claim.public_key));
             context->next_param = CLAIM_AMOUNT;
             break;
         case CLAIM_AMOUNT:  // _amount
-            copy_parameter(context->claim_amount, msg->parameter, sizeof(context->claim_amount));
+            copy_parameter(context->lisk.body.claim.claim_amount,
+                           msg->parameter,
+                           sizeof(context->lisk.body.claim.claim_amount));
             context->next_param = RECIPIENT;
             break;
         case RECIPIENT:  // _recipient
-            copy_address(context->recipient, msg->parameter, sizeof(context->recipient));
+            copy_address(context->lisk.body.claim.recipient,
+                         msg->parameter,
+                         sizeof(context->lisk.body.claim.recipient));
             context->next_param = ED25519_SIGNATURE;
             break;
         // TODO: Verify if we want to show signature on device
         case ED25519_SIGNATURE:  // _sig
             context->next_param = UNEXPECTED_PARAMETER;
+            break;
         // Keep this
         default:
             PRINTF("Param not supported: %d\n", context->next_param);
@@ -88,11 +99,15 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
             context->next_param = LSK_ADDRESS;
             break;
         case LSK_ADDRESS:  // _lskAddress
-            copy_address(context->lsk_address, msg->parameter, sizeof(context->lsk_address));
+            copy_address(context->lisk.body.claim.lsk_address,
+                         msg->parameter,
+                         sizeof(context->lisk.body.claim.lsk_address));
             context->next_param = CLAIM_AMOUNT;
             break;
         case CLAIM_AMOUNT:  // _amount
-            copy_parameter(context->claim_amount, msg->parameter, sizeof(context->claim_amount));
+            copy_parameter(context->lisk.body.claim.claim_amount,
+                           msg->parameter,
+                           sizeof(context->lisk.body.claim.claim_amount));
             context->next_param = MULTISIG_KEYS;
             break;
         // TODO: Verify if we want to show multi-sig account keys on device
@@ -100,12 +115,15 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
             context->next_param = RECIPIENT;
             break;
         case RECIPIENT:  // _recipient
-            copy_address(context->recipient, msg->parameter, sizeof(context->recipient));
+            copy_address(context->lisk.body.claim.recipient,
+                         msg->parameter,
+                         sizeof(context->lisk.body.claim.recipient));
             context->next_param = ED25519_SIGNATURE;
             break;
         // TODO: Verify if we want to show signatures on device
         case ED25519_SIGNATURES:  // _sigs
             context->next_param = UNEXPECTED_PARAMETER;
+            break;
         // Keep this
         default:
             PRINTF("Param not supported: %d\n", context->next_param);

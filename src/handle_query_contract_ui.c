@@ -35,8 +35,8 @@ static bool set_receive_ui(ethQueryContractUI_t *msg, const context_t *context) 
         ticker = msg->network_ticker;
     }
 
-    return amountToString(context->amount_received,
-                          sizeof(context->amount_received),
+    return amountToString(context->lisk.body.swap.amount_received,
+                          sizeof(context->lisk.body.swap.amount_received),
                           decimals,
                           ticker,
                           msg->msg,
@@ -59,13 +59,13 @@ static bool set_beneficiary_ui(ethQueryContractUI_t *msg, context_t *context) {
     // Get the string representation of the address stored in `context->beneficiary`. Put it in
     // `msg->msg`.
     return getEthAddressStringFromBinary(
-        context->beneficiary,
+        context->lisk.body.swap.beneficiary,
         msg->msg + 2,  // +2 here because we've already prefixed with '0x'.
         chainid);
 }
 
 bool getLiskAddressFromPublicKey(uint8_t *publicKey) {
-    return true;
+    return publicKey;
 }
 
 // Set UI for "Claim LSK" screen.
@@ -76,8 +76,8 @@ static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
     uint8_t decimals = 18;
     const char *ticker = "LSK";
 
-    return amountToString(context->claim_amount,
-                          sizeof(context->claim_amount),
+    return amountToString(context->lisk.body.claim.claim_amount,
+                          sizeof(context->lisk.body.claim.claim_amount),
                           decimals,
                           ticker,
                           msg->msg,
@@ -90,7 +90,7 @@ static bool set_sender_ui(ethQueryContractUI_t *msg, context_t *context) {
     strlcpy(msg->title, "Sender Lisk Address", msg->titleLength);
 
     // TODO: Implement utility method
-    return getLiskAddressFromPublicKey(context->public_key);
+    return getLiskAddressFromPublicKey(context->lisk.body.claim.public_key);
 }
 
 // Set UI for "Recipient" screen.
@@ -109,9 +109,8 @@ static bool set_recipient_ui(ethQueryContractUI_t *msg, context_t *context) {
     // Get the string representation of the address stored in `context->beneficiary`. Put it in
     // `msg->msg`.
     return getEthAddressStringFromBinary(
-        context->recipient,
+        context->lisk.body.claim.recipient,
         msg->msg + 2,  // +2 here because we've already prefixed with '0x'.
-        msg->pluginSharedRW->sha3,
         chainid);
 }
 
@@ -146,7 +145,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case CLAIM_REGULAR_ACCOUNT:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_claim_ui(msg);
+                    ret = set_claim_ui(msg, context);
                     break;
                 case 1:
                     ret = set_sender_ui(msg, context);
@@ -161,7 +160,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_claim_ui(msg);
+                    ret = set_claim_ui(msg, context);
                     break;
                 case 1:
                     ret = set_sender_ui(msg, context);
