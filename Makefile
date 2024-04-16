@@ -40,7 +40,7 @@ APPVERSION ?= "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 # Application source files
 APP_SOURCE_PATH += src ethereum-plugin-sdk
 
-NORMAL_NAME ?= $(shell echo -n "$(APPNAME)" | tr " ." "_" | tr "[:upper:]" "[:lower:]")
+NORMAL_NAME ?= $(shell echo "$(APPNAME)" | tr " ." "_" | tr "[:upper:]" "[:lower:]")
 ICON_NANOS = icons/nanos_app_$(NORMAL_NAME).gif
 ICON_NANOX = icons/nanox_app_$(NORMAL_NAME).gif
 ICON_NANOSP = $(ICON_NANOX)
