@@ -9,10 +9,7 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
     // For the first screen, display the plugin name.
     strlcpy(msg->name, APPNAME, msg->nameLength);
 
-    if (context->selectorIndex == CLAIM_REGULAR_ACCOUNT) {
-        strlcpy(msg->version, "Claim LSK", msg->versionLength);
-        msg->result = ETH_PLUGIN_RESULT_OK;
-    } else if (context->selectorIndex == CLAIM_MULTI_SIGNATURE_ACCOUNT) {
+    if (context->selectorIndex == CLAIM_REGULAR_ACCOUNT || context->selectorIndex == CLAIM_MULTI_SIGNATURE_ACCOUNT) {
         strlcpy(msg->version, "Claim LSK", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
