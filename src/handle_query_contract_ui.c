@@ -15,15 +15,17 @@ static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
                           msg->msgLength);
 }
 
-// Set UI for "Sender" screen.
-static bool set_sender_ui(ethQueryContractUI_t *msg, context_t *context) {
-    if (sizeof(context->lisk.body.claim.public_key) != 0) {
-        strlcpy(msg->title, "Sender Lisk Public Key", msg->titleLength);
-        array_hexstr(msg->msg, context->lisk.body.claim.public_key, PUBLIC_KEY_LENGTH);
-    } else {
-        strlcpy(msg->title, "Sender Lisk Address", msg->titleLength);
-        array_hexstr(msg->msg, context->lisk.body.claim.lsk_address, LISK_ADDRESS_LENGTH);
-    }
+// Set UI for "Sender Public Key" screen.
+static bool set_sender_public_key_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Sender Lisk Public Key", msg->titleLength);
+    array_hexstr(msg->msg, context->lisk.body.claim.public_key, PUBLIC_KEY_LENGTH);
+    return true;
+}
+
+// Set UI for "Sender Address" screen.
+static bool set_sender_address_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Sender Lisk Address", msg->titleLength);
+    array_hexstr(msg->msg, context->lisk.body.claim.lsk_address, LISK_ADDRESS_LENGTH);
     return true;
 }
 
@@ -65,7 +67,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     ret = set_claim_ui(msg, context);
                     break;
                 case 1:
-                    ret = set_sender_ui(msg, context);
+                    ret = set_sender_public_key_ui(msg, context);
                     break;
                 case 2:
                     ret = set_recipient_ui(msg, context);
@@ -80,7 +82,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     ret = set_claim_ui(msg, context);
                     break;
                 case 1:
-                    ret = set_sender_ui(msg, context);
+                    ret = set_sender_address_ui(msg, context);
                     break;
                 case 2:
                     ret = set_recipient_ui(msg, context);
