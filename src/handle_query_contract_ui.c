@@ -30,16 +30,8 @@ static bool set_sender_address_ui(ethQueryContractUI_t *msg, context_t *context)
     msg->msg[0] = '0';
     msg->msg[1] = 'x';
 
-    // We need a random chainID for legacy reasons with `getEthAddressStringFromBinary`.
-    // Setting it to `0` will make it work with every chainID :)
-    uint64_t chainid = 0;
-
-    // Get the string representation of the address stored in `context->beneficiary`. Put it in
-    // `msg->msg`.
-    return getEthAddressStringFromBinary(
-        context->lisk.body.claim.lsk_address,
-        msg->msg + 2,  // +2 here because we've already prefixed with '0x'.
-        chainid);
+    array_hexstr(msg->msg + 2, context->lisk.body.claim.lsk_address, LISK_ADDRESS_LENGTH);
+    return true;
 }
 
 // Set UI for "Recipient" screen.
