@@ -39,8 +39,8 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
             break;
         case LSK_ADDRESS:  // _lskAddress
             copy_parameter(context->lisk.body.claim.lsk_address,
-                         msg->parameter,
-                         sizeof(context->lisk.body.claim.lsk_address));
+                           msg->parameter,
+                           sizeof(context->lisk.body.claim.lsk_address));
             context->next_param = CLAIM_AMOUNT;
             break;
         case CLAIM_AMOUNT:  // _amount
