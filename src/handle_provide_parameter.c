@@ -56,7 +56,7 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
             copy_address(context->lisk.body.claim.recipient,
                          msg->parameter,
                          sizeof(context->lisk.body.claim.recipient));
-            context->next_param = ED25519_SIGNATURE;
+            context->next_param = ED25519_SIGNATURES;
             break;
         case ED25519_SIGNATURES:  // _sigs
             break;
