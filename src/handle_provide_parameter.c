@@ -49,7 +49,6 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
                            sizeof(context->lisk.body.claim.claim_amount));
             context->next_param = MULTISIG_KEYS;
             break;
-        // TODO: Verify if we want to show multi-sig account keys on device
         case MULTISIG_KEYS:  // _keys
             context->next_param = RECIPIENT;
             break;
@@ -57,7 +56,7 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
             copy_address(context->lisk.body.claim.recipient,
                          msg->parameter,
                          sizeof(context->lisk.body.claim.recipient));
-            context->next_param = ED25519_SIGNATURE;
+            context->next_param = ED25519_SIGNATURES;
             break;
         case ED25519_SIGNATURES:  // _sigs
             break;

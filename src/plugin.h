@@ -1,5 +1,5 @@
 /*******************************************************************************
- *   Plugin Boilerplate
+ *   Ledger App Lisk
  *   (c) 2023 Ledger
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");

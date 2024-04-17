@@ -45,7 +45,6 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
             context->next_param = PROOF;
             break;
-        // Keep this
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);
             msg->result = ETH_PLUGIN_RESULT_ERROR;
