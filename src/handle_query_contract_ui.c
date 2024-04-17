@@ -64,10 +64,6 @@ static bool set_beneficiary_ui(ethQueryContractUI_t *msg, context_t *context) {
         chainid);
 }
 
-bool getLiskAddressFromPublicKey(uint8_t *publicKey) {
-    return publicKey;
-}
-
 // Set UI for "Claim LSK" screen.
 // EDIT THIS: Adapt / remove this function to your needs.
 static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
@@ -87,10 +83,14 @@ static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
 // Set UI for "Sender" screen.
 // EDIT THIS: Adapt / remove this function to your needs.
 static bool set_sender_ui(ethQueryContractUI_t *msg, context_t *context) {
-    strlcpy(msg->title, "Sender Lisk Address", msg->titleLength);
-
-    // TODO: Implement utility method
-    return getLiskAddressFromPublicKey(context->lisk.body.claim.public_key);
+    if (sizeof(context->lisk.body.claim.public_key) != 0) {
+        strlcpy(msg->title, "Sender Lisk Public Key", msg->titleLength);
+        array_hexstr(msg->msg, context->lisk.body.claim.public_key, msg->msgLength);
+    } else {
+        strlcpy(msg->title, "Sender Lisk Address", msg->titleLength);
+        array_hexstr(msg->msg, context->lisk.body.claim.lsk_address, msg->msgLength);
+    }
+    return true;
 }
 
 // Set UI for "Recipient" screen.
