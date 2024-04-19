@@ -5,7 +5,7 @@ Smart contracts covered by this plugin are:
 
 |  Network | Version | Smart Contract | Address |
 |   ----   |   ---   |      ----      |   ---   |
-| Lisk Sepolia Testnet     | -  | ERC1967Proxy  | `0x5c3a68B5C635Ce0DA7648C30A1B83A61C376bd87` |
+| Lisk Sepolia Testnet     | -  | TokenClaim  | `0x5c3a68B5C635Ce0DA7648C30A1B83A61C376bd87` |
 
 ## Functions
 
