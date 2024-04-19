@@ -23,14 +23,6 @@ It is STRONGLY recommended to follow the
 [plugin guide](https://developers.ledger.com/docs/dapp/embedded-plugin/code-overview/)
 in order to better understand the flow and the context for plugins.
 
-## Smart Contracts
-
-Smart contracts covered by this plugin are:
-
-| Network | Smart Contract Name | Address                                      | Selectors                                                                                                     |
-|---------|---------------------|----------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| Lisk Sepolia Testnet     | ERC1967Proxy          | `0x5c3a68B5C635Ce0DA7648C30A1B83A61C376bd87` | TODO |    
-
 ## Ethereum SDK
 
 Ethereum plugins need the [Ethereum SDK](https://github.com/LedgerHQ/ethereum-plugin-sdk).
@@ -42,9 +34,28 @@ You can see that this [CI](https://github.com/LedgerHQ/app-plugin-boilerplate/bl
 verifies that the SDK used is either on the latest `master` or `develop` references. This ensures
 the code is compiled and tested on the latest version of the SDK.
 
+## Prerequisite
+To start with, follow the steps below:
+- Clone the plugin to a new folder.
+
+    ```shell
+    git clone --recurse-submodules https://github.com/LiskHQ/lisk-app-plugin.git
+    ```
+
+    Then in the same folder clone the app-ethereum.
+
+    ```shell
+    git clone --recurse-submodules https://github.com/LedgerHQ/app-ethereum.git
+    ```
+- Install [Xquartz](https://www.xquartz.org/) and make sure you have enabled "Allow connections from network clients" enabled under "Security" settings.
+- Install and start Docker.
+- Install and enable [Ledger Dev Tools VS Code Extension](https://marketplace.visualstudio.com/items?itemName=LedgerHQ.ledger-dev-tools).
+- To build, select a target and click on Build on the "Ledger Dev Tools" VS code extension.
+- Once build is complete, click on "Run tests" to run the tests
+
 ## Documentation
 
-The documentation about the plugin shall be added in [PLUGIN_SPECIFICATON.md](https://github.com/LedgerHQ/app-plugin-boilerplate/blob/develop/PLUGIN_SPECIFICATION.md). It shall includes at least the smart contracts and functions supported by the plugin.
+The documentation about the plugin can be found in [PLUGIN_SPECIFICATON.md](PLUGIN_SPECIFICATION.md). It includes the smart contracts and functions supported by the plugin.
 
 ## Formatting
 
