@@ -79,6 +79,7 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
 
     msg->result = ETH_PLUGIN_RESULT_OK;
 
+    // EDIT THIS: adapt the cases and the names of the functions.
     switch (context->selectorIndex) {
         case CLAIM_REGULAR_ACCOUNT:
             handle_claim_regular_account(msg, context);

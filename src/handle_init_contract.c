@@ -38,11 +38,14 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
     }
 
     // Set `next_param` to be the first field we expect to parse.
+    // EDIT THIS: Adapt the `cases`, and set the `next_param` to be the first parameter you expect
+    // to parse.
     switch (context->selectorIndex) {
         case CLAIM_REGULAR_ACCOUNT:
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
             context->next_param = PROOF;
             break;
+        // Keep this
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);
             msg->result = ETH_PLUGIN_RESULT_ERROR;

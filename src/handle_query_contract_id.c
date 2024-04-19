@@ -9,6 +9,7 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
     // For the first screen, display the plugin name.
     strlcpy(msg->name, APPNAME, msg->nameLength);
 
+    // EDIT THIS: Adapt the cases by modifying the strings you pass to `strlcpy`.
     if (context->selectorIndex == CLAIM_REGULAR_ACCOUNT ||
         context->selectorIndex == CLAIM_MULTI_SIGNATURE_ACCOUNT) {
         strlcpy(msg->version, "Claim LSK", msg->versionLength);
