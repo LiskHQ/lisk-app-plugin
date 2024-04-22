@@ -99,7 +99,6 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
             break;
         default:
             PRINTF("Selector index: %d not supported\n", context->selectorIndex);
-            ret = false;
     }
     msg->result = ret ? ETH_PLUGIN_RESULT_OK : ETH_PLUGIN_RESULT_ERROR;
 }
