@@ -67,24 +67,21 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
     }
 }
 
-static void handle_staking_lock_amount(ethPluginProvideParameter_t *msg, context_t *context) {
+static void handle_reward_create_position(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
-        case LOCK_OWNER:  // lockOwner
-            copy_address(context->lisk.body.staking.lockOwner,
-                         msg->parameter,
-                         sizeof(context->lisk.body.staking.lockOwner));
-            context->next_param = AMOUNT;
-            break;
-        case AMOUNT:  // amount
-            copy_parameter(context->lisk.body.staking.amount,
+        case LOCK_AMOUNT:  // amount
+            copy_parameter(context->lisk.body.reward.lock_amount,
                            msg->parameter,
-                           sizeof(context->lisk.body.staking.amount));
-            context->next_param = LOCKING_DURATION;
+                           sizeof(context->lisk.body.reward.lock_amount));
+            context->next_param = LOCK_DURATION;
             break;
-        case LOCKING_DURATION:  // lockingDuration
-            copy_parameter(context->lisk.body.staking.lockingDuration,
+        case LOCK_DURATION:  // lockingDuration
+            copy_parameter(context->lisk.body.reward.lock_duration,
                            msg->parameter,
-                           sizeof(context->lisk.body.staking.lockingDuration));
+                           sizeof(context->lisk.body.reward.lock_duration));
+            context->next_param = UNEXPECTED_PARAMETER;
+            break;
+        case UNEXPECTED_PARAMETER:
             break;
         default:
             PRINTF("Param not supported: %d\n", context->next_param);
@@ -113,8 +110,8 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
             handle_claim_multisig_account(msg, context);
             break;
-        case STAKING_LOCK_AMOUNT:
-            handle_staking_lock_amount(msg, context);
+        case REWARD_CREATE_POSITION:
+            handle_reward_create_position(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

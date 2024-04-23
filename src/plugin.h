@@ -31,7 +31,7 @@
 #define SELECTORS_LIST(X)                        \
     X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d)         \
     X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68) \
-    X(STAKING_LOCK_AMOUNT, 0x1c319c2d)  // TODO: Update MethodID once available
+    X(REWARD_CREATE_POSITION, 0xd1aaef05)  // TODO: May be rename it to REWARD_STAKE_AMOUNT
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -67,10 +67,9 @@ typedef enum {
     LSK_ADDRESS,
     ED25519_SIGNATURES,
 
-    // Staking lock amount parameters
-    LOCK_OWNER,
-    AMOUNT,
-    LOCKING_DURATION,
+    // Reward create position parameters
+    LOCK_AMOUNT,
+    LOCK_DURATION,
 } parameter;
 
 typedef struct {
@@ -82,10 +81,9 @@ typedef struct {
             uint8_t lsk_address[LISK_ADDRESS_LENGTH];
         } claim;
         struct {
-            uint8_t lockOwner[ADDRESS_LENGTH];
-            uint8_t amount[INT256_LENGTH];
-            uint8_t lockingDuration[INT256_LENGTH];
-        } staking;
+            uint8_t lock_amount[INT256_LENGTH];
+            uint8_t lock_duration[INT256_LENGTH];
+        } reward;
     } body;
 } lisk_t;
 

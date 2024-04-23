@@ -1,6 +1,9 @@
 #include "plugin.h"
 
-static bool handle_amount(ethQueryContractUI_t *msg, const context_t *context) {
+// Set UI for "Claim LSK" screen.
+static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
+    strlcpy(msg->title, "Claim LSK", msg->titleLength);
+
     uint8_t decimals = 18;
     const char *ticker = "LSK";
 
@@ -10,29 +13,6 @@ static bool handle_amount(ethQueryContractUI_t *msg, const context_t *context) {
                           ticker,
                           msg->msg,
                           msg->msgLength);
-}
-
-static bool handle_address(ethQueryContractUI_t *msg, context_t *context) {
-    // Prefix the address with `0x`.
-    msg->msg[0] = '0';
-    msg->msg[1] = 'x';
-
-    // We need a random chainID for legacy reasons with `getEthAddressStringFromBinary`.
-    // Setting it to `0` will make it work with every chainID :)
-    uint64_t chainid = 0;
-
-    // Get the string representation of the address stored in `context->beneficiary`. Put it in
-    // `msg->msg`.
-    return getEthAddressStringFromBinary(
-        context->lisk.body.claim.recipient,
-        msg->msg + 2,  // +2 here because we've already prefixed with '0x'.
-        chainid);
-}
-
-// Set UI for "Claim LSK" screen.
-static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
-    strlcpy(msg->title, "Claim LSK", msg->titleLength);
-    return handle_amount(msg, context);
 }
 
 // Set UI for "Sender Public Key" screen.
@@ -57,26 +37,43 @@ static bool set_sender_address_ui(ethQueryContractUI_t *msg, context_t *context)
 // Set UI for "Recipient" screen.
 static bool set_recipient_ui(ethQueryContractUI_t *msg, context_t *context) {
     strlcpy(msg->title, "Recipient Address L2", msg->titleLength);
-    return handle_address(msg, context);
-}
 
-// Set UI for "Lock Owner" screen.
-static bool set_lock_owner_ui(ethQueryContractUI_t *msg, context_t *context) {
-    strlcpy(msg->title, "Lock Owner", msg->titleLength);
-    return handle_address(msg, context);
+    // Prefix the address with `0x`.
+    msg->msg[0] = '0';
+    msg->msg[1] = 'x';
+
+    // We need a random chainID for legacy reasons with `getEthAddressStringFromBinary`.
+    // Setting it to `0` will make it work with every chainID :)
+    uint64_t chainid = 0;
+
+    // Get the string representation of the address stored in `context->beneficiary`. Put it in
+    // `msg->msg`.
+    return getEthAddressStringFromBinary(
+        context->lisk.body.claim.recipient,
+        msg->msg + 2,  // +2 here because we've already prefixed with '0x'.
+        chainid);
 }
 
 // Set UI for "Lock Amount" screen.
 static bool set_lock_amount_ui(ethQueryContractUI_t *msg, const context_t *context) {
     strlcpy(msg->title, "Lock Amount", msg->titleLength);
-    return handle_amount(msg, context);
+
+    uint8_t decimals = 18;
+    const char *ticker = "LSK";
+
+    return amountToString(context->lisk.body.reward.lock_amount,
+                          sizeof(context->lisk.body.reward.lock_amount),
+                          decimals,
+                          ticker,
+                          msg->msg,
+                          msg->msgLength);
 }
 
 // Set UI for "Lock Duration" screen.
 static bool set_lock_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
     strlcpy(msg->title, "Lock Duration (in days)", msg->titleLength);
-    return uint256_to_decimal(context->lisk.body.staking.lockingDuration,
-                              sizeof(context->lisk.body.staking.lockingDuration),
+    return uint256_to_decimal(context->lisk.body.reward.lock_duration,
+                              sizeof(context->lisk.body.reward.lock_duration),
                               msg->msg,
                               msg->msgLength);
 }
@@ -124,11 +121,8 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     PRINTF("Received an invalid screenIndex\n");
             }
             break;
-        case STAKING_LOCK_AMOUNT:
+        case REWARD_CREATE_POSITION:
             switch (msg->screenIndex) {
-                case 0:
-                    ret = set_lock_owner_ui(msg, context);
-                    break;
                 case 1:
                     ret = set_lock_amount_ui(msg, context);
                     break;

@@ -45,8 +45,8 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
             context->next_param = PROOF;
             break;
-        case STAKING_LOCK_AMOUNT:
-            context->next_param = LOCK_OWNER;
+        case REWARD_CREATE_POSITION:
+            context->next_param = LOCK_AMOUNT;
             break;
         // Keep this
         default:
