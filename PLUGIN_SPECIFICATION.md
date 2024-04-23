@@ -1,24 +1,17 @@
 # Technical Specification
-
-> **Warning**
-This documentation is a template and shall be updated.
-
-## About
-
-This documentation describes the smart contracts and functions supported by the boilerplate plugin.
-
 ## Smart Contracts
 
-Smart contracts covered by the plugin shall be described here:
+Smart contracts covered by this plugin are:
 
 |  Network | Version | Smart Contract | Address |
 |   ----   |   ---   |      ----      |   ---   |
-| NetworkName   | VX  | ContractName  | `0x0000000000000000000000000000000000000000` |
+| Lisk Sepolia Testnet     | -  | TokenClaim  | `0x5c3a68B5C635Ce0DA7648C30A1B83A61C376bd87` |
 
 ## Functions
 
-For the smart contracts implemented, the functions covered by the plugin shall be described here:
+Following functions are covered by this plugins:
 
 |Contract |    Function   | Selector  | Displayed Parameters |
 |   ---   |    ---        | ---       | --- |
-|ContractName  | FunctionName           | `0x00000000`| <table><tbody> <tr><td><code>type ParameterName</code></td></tr> </tbody></table> |
+|ERC1967Proxy  | claimRegularAccount           | `0xf6de242d`| <table> <tbody> <tr><td><code>uint256 claimAmount</code></td></tr> <tr><td><code>bytes senderPublicKey</code></td></tr> <tr><td><code>address recipientAddress</code></td></tr> </tbody> </table>                                                                                               |
+|ERC1967Proxy  | claimMultisigAccount           | `0x2f559f68`| <table> <tbody> <tr><td><code>uint256 claimAmount</code></td></tr> <tr><td><code>bytes senderAddress</code></td></tr> <tr><td><code>address recipientAddress</code></td></tr> </tbody> </table>                                                                                               |
