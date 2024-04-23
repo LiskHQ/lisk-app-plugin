@@ -8,6 +8,7 @@ void handle_finalize(ethPluginFinalize_t *msg) {
     switch (context->selectorIndex) {
         case CLAIM_REGULAR_ACCOUNT:
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
+        case STAKING_LOCK_AMOUNT:
             msg->numScreens = 3;
             break;
         default:

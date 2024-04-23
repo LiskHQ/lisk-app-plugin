@@ -1,9 +1,6 @@
 #include "plugin.h"
 
-// Set UI for "Claim LSK" screen.
-static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
-    strlcpy(msg->title, "Claim LSK", msg->titleLength);
-
+static bool handle_amount(ethQueryContractUI_t *msg, const context_t *context) {
     uint8_t decimals = 18;
     const char *ticker = "LSK";
 
@@ -13,6 +10,29 @@ static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
                           ticker,
                           msg->msg,
                           msg->msgLength);
+}
+
+static bool handle_address(ethQueryContractUI_t *msg, context_t *context) {
+    // Prefix the address with `0x`.
+    msg->msg[0] = '0';
+    msg->msg[1] = 'x';
+
+    // We need a random chainID for legacy reasons with `getEthAddressStringFromBinary`.
+    // Setting it to `0` will make it work with every chainID :)
+    uint64_t chainid = 0;
+
+    // Get the string representation of the address stored in `context->beneficiary`. Put it in
+    // `msg->msg`.
+    return getEthAddressStringFromBinary(
+        context->lisk.body.claim.recipient,
+        msg->msg + 2,  // +2 here because we've already prefixed with '0x'.
+        chainid);
+}
+
+// Set UI for "Claim LSK" screen.
+static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
+    strlcpy(msg->title, "Claim LSK", msg->titleLength);
+    return handle_amount(msg, context);
 }
 
 // Set UI for "Sender Public Key" screen.
@@ -37,21 +57,28 @@ static bool set_sender_address_ui(ethQueryContractUI_t *msg, context_t *context)
 // Set UI for "Recipient" screen.
 static bool set_recipient_ui(ethQueryContractUI_t *msg, context_t *context) {
     strlcpy(msg->title, "Recipient Address L2", msg->titleLength);
+    return handle_address(msg, context);
+}
 
-    // Prefix the address with `0x`.
-    msg->msg[0] = '0';
-    msg->msg[1] = 'x';
+// Set UI for "Lock Owner" screen.
+static bool set_lock_owner_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Lock Owner", msg->titleLength);
+    return handle_address(msg, context);
+}
 
-    // We need a random chainID for legacy reasons with `getEthAddressStringFromBinary`.
-    // Setting it to `0` will make it work with every chainID :)
-    uint64_t chainid = 0;
+// Set UI for "Lock Amount" screen.
+static bool set_lock_amount_ui(ethQueryContractUI_t *msg, const context_t *context) {
+    strlcpy(msg->title, "Lock Amount", msg->titleLength);
+    return handle_amount(msg, context);
+}
 
-    // Get the string representation of the address stored in `context->beneficiary`. Put it in
-    // `msg->msg`.
-    return getEthAddressStringFromBinary(
-        context->lisk.body.claim.recipient,
-        msg->msg + 2,  // +2 here because we've already prefixed with '0x'.
-        chainid);
+// Set UI for "Lock Duration" screen.
+static bool set_lock_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Lock Duration (in days)", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.staking.lockingDuration,
+                              sizeof(context->lisk.body.staking.lockingDuration),
+                              msg->msg,
+                              msg->msgLength);
 }
 
 void handle_query_contract_ui(ethQueryContractUI_t *msg) {
@@ -92,6 +119,21 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 2:
                     ret = set_recipient_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case STAKING_LOCK_AMOUNT:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_lock_owner_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_lock_amount_ui(msg, context);
+                    break;
+                case 2:
+                    ret = set_lock_duration_ui(msg, context);
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");

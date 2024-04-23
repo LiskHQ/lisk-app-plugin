@@ -45,6 +45,9 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
             context->next_param = PROOF;
             break;
+        case STAKING_LOCK_AMOUNT:
+            context->next_param = LOCK_OWNER;
+            break;
         // Keep this
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);

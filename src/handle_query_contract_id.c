@@ -14,6 +14,9 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
         context->selectorIndex == CLAIM_MULTI_SIGNATURE_ACCOUNT) {
         strlcpy(msg->version, "Claim LSK", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == STAKING_LOCK_AMOUNT) {
+        strlcpy(msg->version, "Stake Amount", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
         PRINTF("Selector index: %d not supported\n", context->selectorIndex);
         msg->result = ETH_PLUGIN_RESULT_ERROR;

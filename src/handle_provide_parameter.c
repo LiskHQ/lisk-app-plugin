@@ -67,6 +67,32 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
     }
 }
 
+static void handle_staking_lock_amount(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case LOCK_OWNER:  // lockOwner
+            copy_address(context->lisk.body.staking.lockOwner,
+                         msg->parameter,
+                         sizeof(context->lisk.body.staking.lockOwner));
+            context->next_param = AMOUNT;
+            break;
+        case AMOUNT:  // amount
+            copy_parameter(context->lisk.body.staking.amount,
+                           msg->parameter,
+                           sizeof(context->lisk.body.staking.amount));
+            context->next_param = LOCKING_DURATION;
+            break;
+        case LOCKING_DURATION:  // lockingDuration
+            copy_parameter(context->lisk.body.staking.lockingDuration,
+                           msg->parameter,
+                           sizeof(context->lisk.body.staking.lockingDuration));
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->next_param);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
 void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     // We use `%.*H`: it's a utility function to print bytes. You first give
@@ -86,6 +112,9 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
             break;
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
             handle_claim_multisig_account(msg, context);
+            break;
+        case STAKING_LOCK_AMOUNT:
+            handle_staking_lock_amount(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

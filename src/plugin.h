@@ -28,9 +28,10 @@
 // A Xmacro below will create for you:
 //     - an enum named selector_t with every NAME
 //     - a map named SELECTORS associating each NAME with it's value
-#define SELECTORS_LIST(X)                \
-    X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d) \
-    X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68)
+#define SELECTORS_LIST(X)                        \
+    X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d)         \
+    X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68) \
+    X(STAKING_LOCK_AMOUNT, 0x1c319c2d)  // TODO: Update MethodID once available
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -65,6 +66,11 @@ typedef enum {
     MULTISIG_KEYS,
     LSK_ADDRESS,
     ED25519_SIGNATURES,
+
+    // Staking lock amount parameters
+    LOCK_OWNER,
+    AMOUNT,
+    LOCKING_DURATION,
 } parameter;
 
 typedef struct {
@@ -75,6 +81,11 @@ typedef struct {
             uint8_t public_key[PUBLIC_KEY_LENGTH];
             uint8_t lsk_address[LISK_ADDRESS_LENGTH];
         } claim;
+        struct {
+            uint8_t lockOwner[ADDRESS_LENGTH];
+            uint8_t amount[INT256_LENGTH];
+            uint8_t lockingDuration[INT256_LENGTH];
+        } staking;
     } body;
 } lisk_t;
 
