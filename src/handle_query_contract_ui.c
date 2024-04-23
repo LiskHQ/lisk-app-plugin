@@ -71,7 +71,7 @@ static bool set_lock_amount_ui(ethQueryContractUI_t *msg, const context_t *conte
 
 // Set UI for "Lock Duration" screen.
 static bool set_lock_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
-    strlcpy(msg->title, "Lock Duration (in days)", msg->titleLength);
+    strlcpy(msg->title, "Duration (in days)", msg->titleLength);
     return uint256_to_decimal(context->lisk.body.reward.lock_duration,
                               sizeof(context->lisk.body.reward.lock_duration),
                               msg->msg,
@@ -123,10 +123,10 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
             break;
         case REWARD_CREATE_POSITION:
             switch (msg->screenIndex) {
-                case 1:
+                case 0:
                     ret = set_lock_amount_ui(msg, context);
                     break;
-                case 2:
+                case 1:
                     ret = set_lock_duration_ui(msg, context);
                     break;
                 default:
