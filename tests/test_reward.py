@@ -75,3 +75,53 @@ def test_create_position(backend, firmware, navigator, test_name, wallet_addr):
     addr = recover_transaction(tx_params, vrs)
     assert addr == wallet_addr.get()
 
+def test_initiate_fast_unlock(backend, firmware, navigator, test_name, wallet_addr):
+    client = EthAppClient(backend)
+
+    data = contract.encodeABI("initiateFastUnlock", [
+            [
+                86511774,
+                100,
+                34532,
+                34,
+                1
+            ]
+    ])
+
+    # first setup the external plugin
+    client.set_external_plugin(PLUGIN_NAME,
+                               contract.address,
+                               # Extract function selector from the encoded data
+                               get_selector_from_data(data))
+
+    tx_params = {
+        "nonce": 20,
+        "maxFeePerGas": Web3.to_wei(145, "gwei"),
+        "maxPriorityFeePerGas": Web3.to_wei(1.5, "gwei"),
+        "gas": 173290,
+        "to": contract.address,
+        "value": Web3.to_wei(0.1, "ether"),
+        "chainId": ChainId.ETH,
+        "data": data
+    }
+
+    # send the transaction
+    with client.sign(DERIVATION_PATH, tx_params):
+        # Validate the on-screen request by performing the navigation appropriate for this device
+        if firmware.device.startswith("nano"):
+            navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
+                                                      [NavInsID.BOTH_CLICK],
+                                                      "Accept",
+                                                      ROOT_SCREENSHOT_PATH,
+                                                      test_name)
+        else:
+            navigator.navigate_until_text_and_compare(NavInsID.USE_CASE_REVIEW_TAP,
+                                                      [NavInsID.USE_CASE_REVIEW_CONFIRM,
+                                                       NavInsID.USE_CASE_STATUS_DISMISS],
+                                                      "Hold to sign",
+                                                      ROOT_SCREENSHOT_PATH,
+                                                      test_name)
+    # verify signature
+    vrs = ResponseParser.signature(client.response().data)
+    addr = recover_transaction(tx_params, vrs)
+    assert addr == wallet_addr.get()
