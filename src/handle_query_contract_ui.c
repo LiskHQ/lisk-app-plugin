@@ -78,6 +78,15 @@ static bool set_lock_duration_ui(ethQueryContractUI_t *msg, context_t *context) 
                               msg->msgLength);
 }
 
+// Set UI for "Lock IDs" screen.
+static bool set_lock_ids_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Lock ID", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.reward.lock_id,
+                              sizeof(context->lisk.body.reward.lock_id),
+                              msg->msg,
+                              msg->msgLength);
+}
+
 void handle_query_contract_ui(ethQueryContractUI_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     bool ret = false;
@@ -131,6 +140,13 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_INIT_FAST_UNLOCK:
+            if (msg->screenIndex < context->lisk.body.reward.lock_ids_len) {
+                ret = set_lock_ids_ui(msg, context);
+            } else {
+                PRINTF("Received an invalid screenIndex\n");
             }
             break;
         default:

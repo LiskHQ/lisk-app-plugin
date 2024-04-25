@@ -48,6 +48,9 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
         case REWARD_CREATE_POSITION:
             context->next_param = LOCK_AMOUNT;
             break;
+        case REWARD_INIT_FAST_UNLOCK:
+            context->next_param = LOCK_IDS_LEN;
+            break;
         // Keep this
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);

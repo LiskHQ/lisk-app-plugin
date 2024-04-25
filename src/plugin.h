@@ -31,7 +31,8 @@
 #define SELECTORS_LIST(X)                        \
     X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d)         \
     X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68) \
-    X(REWARD_CREATE_POSITION, 0xd1aaef05)  // TODO: May be rename it to REWARD_STAKE_AMOUNT
+    X(REWARD_CREATE_POSITION, 0xd1aaef05)        \
+    X(REWARD_INIT_FAST_UNLOCK, 0x864c8725)
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -57,6 +58,7 @@ typedef enum {
     CLAIM_AMOUNT,
     RECIPIENT,
     UNEXPECTED_PARAMETER,
+    NONE,
 
     // Claim regular account parameters
     PUBLIC_KEY,
@@ -70,6 +72,11 @@ typedef enum {
     // Reward create position parameters
     LOCK_AMOUNT,
     LOCK_DURATION,
+
+    // Reward init fast unlock parameters
+    LOCK_ID,
+    LOCK_IDS_LEN,
+    LOCK_ID_OFFSET_1,
 } parameter;
 
 typedef struct {
@@ -83,6 +90,8 @@ typedef struct {
         struct {
             uint8_t lock_amount[INT256_LENGTH];
             uint8_t lock_duration[INT256_LENGTH];
+            uint16_t lock_ids_len;
+            uint8_t lock_id[INT256_LENGTH];
         } reward;
     } body;
 } lisk_t;

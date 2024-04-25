@@ -17,6 +17,9 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
     } else if (context->selectorIndex == REWARD_CREATE_POSITION) {
         strlcpy(msg->version, "Stake Amount", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_INIT_FAST_UNLOCK) {
+        strlcpy(msg->version, "Fast Unlock", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
         PRINTF("Selector index: %d not supported\n", context->selectorIndex);
         msg->result = ETH_PLUGIN_RESULT_ERROR;
