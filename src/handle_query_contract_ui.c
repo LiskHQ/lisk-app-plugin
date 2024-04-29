@@ -140,10 +140,11 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
             }
             break;
         case REWARD_INIT_FAST_UNLOCK:
-            if (msg->screenIndex < context->lisk.body.rewardFastUnlock.lock_ids_len) {
-                ret =
-                    set_lock_ids_ui(msg,
-                                    &context->lisk.body.rewardFastUnlock.lock_id[msg->screenIndex]);
+        case REWARD_CLAIM_REWARDS:
+        case REWARD_PAUSE_UNLOCKING:
+        case REWARD_RESUME_UNLOCKING:
+            if (msg->screenIndex < context->lisk.body.reward.lock_ids_len) {
+                ret = set_lock_ids_ui(msg, &context->lisk.body.reward.lock_id[msg->screenIndex]);
             } else {
                 PRINTF("Received an invalid screenIndex\n");
             }

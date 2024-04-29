@@ -20,6 +20,15 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
     } else if (context->selectorIndex == REWARD_INIT_FAST_UNLOCK) {
         strlcpy(msg->version, "Fast Unlock", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_CLAIM_REWARDS) {
+        strlcpy(msg->version, "Claim Rewards", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_PAUSE_UNLOCKING) {
+        strlcpy(msg->version, "Pause Unlocking", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_RESUME_UNLOCKING) {
+        strlcpy(msg->version, "Resume Unlocking", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
         PRINTF("Selector index: %d not supported\n", context->selectorIndex);
         msg->result = ETH_PLUGIN_RESULT_ERROR;

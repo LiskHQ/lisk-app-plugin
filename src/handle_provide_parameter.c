@@ -97,29 +97,28 @@ static void handle_reward_create_position(ethPluginProvideParameter_t *msg, cont
 }
 
 uint16_t counter = 0;
-static void handle_reward_init_fast_unlock(ethPluginProvideParameter_t *msg, context_t *context) {
+static void handle_lock_ids_array(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
         case OFFSET:
             context->next_param = LOCK_IDS_LEN;
             break;
         case LOCK_IDS_LEN:
-            if (!U2BE_from_parameter(msg->parameter,
-                                     &context->lisk.body.rewardFastUnlock.lock_ids_len) ||
-                context->lisk.body.rewardFastUnlock.lock_ids_len > 4 ||
-                context->lisk.body.rewardFastUnlock.lock_ids_len == 0) {
+            if (!U2BE_from_parameter(msg->parameter, &context->lisk.body.reward.lock_ids_len) ||
+                context->lisk.body.reward.lock_ids_len > 4 ||
+                context->lisk.body.reward.lock_ids_len == 0) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
             }
 
             context->next_param = LOCK_ID;
             break;
         case LOCK_ID:
-            if (counter == context->lisk.body.rewardFastUnlock.lock_ids_len) {
+            if (counter == context->lisk.body.reward.lock_ids_len) {
                 context->next_param = NONE;
             }
-            copy_parameter(context->lisk.body.rewardFastUnlock.lock_id[counter].value,
+            copy_parameter(context->lisk.body.reward.lock_id[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
-            if (context->lisk.body.rewardFastUnlock.lock_ids_len > 1) {
+            if (context->lisk.body.reward.lock_ids_len > 1) {
                 context->next_param = LOCK_ID_NEXT;
                 counter++;
             } else {
@@ -127,7 +126,7 @@ static void handle_reward_init_fast_unlock(ethPluginProvideParameter_t *msg, con
             }
             break;
         case LOCK_ID_NEXT:
-            copy_parameter(context->lisk.body.rewardFastUnlock.lock_id[counter].value,
+            copy_parameter(context->lisk.body.reward.lock_id[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
             counter++;
@@ -165,7 +164,10 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
             handle_reward_create_position(msg, context);
             break;
         case REWARD_INIT_FAST_UNLOCK:
-            handle_reward_init_fast_unlock(msg, context);
+        case REWARD_CLAIM_REWARDS:
+        case REWARD_PAUSE_UNLOCKING:
+        case REWARD_RESUME_UNLOCKING:
+            handle_lock_ids_array(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

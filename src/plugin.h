@@ -32,7 +32,10 @@
     X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d)         \
     X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68) \
     X(REWARD_CREATE_POSITION, 0xd1aaef05)        \
-    X(REWARD_INIT_FAST_UNLOCK, 0x864c8725)
+    X(REWARD_INIT_FAST_UNLOCK, 0x864c8725)       \
+    X(REWARD_CLAIM_REWARDS, 0x5eac6239)          \
+    X(REWARD_RESUME_UNLOCKING, 0x82d4ae58)       \
+    X(REWARD_PAUSE_UNLOCKING, 0xfe042b5b)
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -73,11 +76,9 @@ typedef enum {
     LSK_ADDRESS,
     ED25519_SIGNATURES,
 
-    // Reward create position parameters
+    // Reward contract parameters
     LOCK_AMOUNT,
     LOCK_DURATION,
-
-    // Reward init fast unlock parameters
     LOCK_ID,
     LOCK_IDS_LEN,
     LOCK_ID_NEXT,
@@ -101,7 +102,7 @@ typedef struct {
         struct {
             uint16_t lock_ids_len;
             lock_t lock_id[4];
-        } rewardFastUnlock;
+        } reward;
     } body;
 } lisk_t;
 
