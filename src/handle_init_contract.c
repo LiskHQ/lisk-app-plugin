@@ -49,7 +49,7 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
             context->next_param = LOCK_AMOUNT;
             break;
         case REWARD_INIT_FAST_UNLOCK:
-            context->next_param = LOCK_IDS_LEN;
+            context->next_param = OFFSET;
             break;
         // Keep this
         default:

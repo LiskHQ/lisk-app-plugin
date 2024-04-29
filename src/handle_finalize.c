@@ -14,7 +14,7 @@ void handle_finalize(ethPluginFinalize_t *msg) {
             msg->numScreens = 2;
             break;
         case REWARD_INIT_FAST_UNLOCK:
-            msg->numScreens = context->lisk.body.reward.lock_ids_len;
+            msg->numScreens = context->lisk.body.rewardFastUnlock.lock_ids_len;
             break;
         default:
             msg->result = ETH_PLUGIN_RESULT_ERROR;

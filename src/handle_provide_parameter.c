@@ -76,15 +76,15 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
 static void handle_reward_create_position(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
         case LOCK_AMOUNT:  // amount
-            copy_parameter(context->lisk.body.reward.lock_amount,
+            copy_parameter(context->lisk.body.rewardCreatePosition.lock_amount,
                            msg->parameter,
-                           sizeof(context->lisk.body.reward.lock_amount));
+                           sizeof(context->lisk.body.rewardCreatePosition.lock_amount));
             context->next_param = LOCK_DURATION;
             break;
         case LOCK_DURATION:  // lockingDuration
-            copy_parameter(context->lisk.body.reward.lock_duration,
+            copy_parameter(context->lisk.body.rewardCreatePosition.lock_duration,
                            msg->parameter,
-                           sizeof(context->lisk.body.reward.lock_duration));
+                           sizeof(context->lisk.body.rewardCreatePosition.lock_duration));
             context->next_param = UNEXPECTED_PARAMETER;
             break;
         case UNEXPECTED_PARAMETER:
@@ -96,35 +96,41 @@ static void handle_reward_create_position(ethPluginProvideParameter_t *msg, cont
     }
 }
 
+uint16_t counter = 0;
 static void handle_reward_init_fast_unlock(ethPluginProvideParameter_t *msg, context_t *context) {
-    uint16_t counter = 0;
     switch (context->next_param) {
+        case OFFSET:
+            context->next_param = LOCK_IDS_LEN;
+            break;
         case LOCK_IDS_LEN:
-            if (!U2BE_from_parameter(msg->parameter, &context->lisk.body.reward.lock_ids_len) ||
-                context->lisk.body.reward.lock_ids_len == 0) {
+            if (!U2BE_from_parameter(msg->parameter,
+                                     &context->lisk.body.rewardFastUnlock.lock_ids_len) ||
+                context->lisk.body.rewardFastUnlock.lock_ids_len > 4 ||
+                context->lisk.body.rewardFastUnlock.lock_ids_len == 0) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
             }
 
             context->next_param = LOCK_ID;
             break;
         case LOCK_ID:
-            if (counter == context->lisk.body.reward.lock_ids_len) {
+            if (counter == context->lisk.body.rewardFastUnlock.lock_ids_len) {
                 context->next_param = NONE;
             }
-            copy_parameter(context->lisk.body.reward.lock_id,
+            copy_parameter(context->lisk.body.rewardFastUnlock.lock_id[counter].value,
                            msg->parameter,
-                           sizeof(context->lisk.body.reward.lock_id));
-            if (context->lisk.body.reward.lock_ids_len > 1) {
+                           INT256_LENGTH);
+            if (context->lisk.body.rewardFastUnlock.lock_ids_len > 1) {
+                context->next_param = LOCK_ID_NEXT;
                 counter++;
-                context->next_param = LOCK_ID_OFFSET_1;
             } else {
                 context->next_param = NONE;
             }
             break;
-        case LOCK_ID_OFFSET_1:
-            copy_parameter(context->lisk.body.reward.lock_id,
+        case LOCK_ID_NEXT:
+            copy_parameter(context->lisk.body.rewardFastUnlock.lock_id[counter].value,
                            msg->parameter,
-                           sizeof(context->lisk.body.reward.lock_id));
+                           INT256_LENGTH);
+            counter++;
             context->next_param = LOCK_ID;
             break;
         case NONE:

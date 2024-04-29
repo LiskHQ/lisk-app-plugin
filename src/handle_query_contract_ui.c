@@ -61,8 +61,8 @@ static bool set_lock_amount_ui(ethQueryContractUI_t *msg, const context_t *conte
     uint8_t decimals = 18;
     const char *ticker = "LSK";
 
-    return amountToString(context->lisk.body.reward.lock_amount,
-                          sizeof(context->lisk.body.reward.lock_amount),
+    return amountToString(context->lisk.body.rewardCreatePosition.lock_amount,
+                          sizeof(context->lisk.body.rewardCreatePosition.lock_amount),
                           decimals,
                           ticker,
                           msg->msg,
@@ -72,19 +72,16 @@ static bool set_lock_amount_ui(ethQueryContractUI_t *msg, const context_t *conte
 // Set UI for "Lock Duration" screen.
 static bool set_lock_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
     strlcpy(msg->title, "Duration (in days)", msg->titleLength);
-    return uint256_to_decimal(context->lisk.body.reward.lock_duration,
-                              sizeof(context->lisk.body.reward.lock_duration),
+    return uint256_to_decimal(context->lisk.body.rewardCreatePosition.lock_duration,
+                              sizeof(context->lisk.body.rewardCreatePosition.lock_duration),
                               msg->msg,
                               msg->msgLength);
 }
 
 // Set UI for "Lock IDs" screen.
-static bool set_lock_ids_ui(ethQueryContractUI_t *msg, context_t *context) {
+static bool set_lock_ids_ui(ethQueryContractUI_t *msg, lock_t *lock) {
     strlcpy(msg->title, "Lock ID", msg->titleLength);
-    return uint256_to_decimal(context->lisk.body.reward.lock_id,
-                              sizeof(context->lisk.body.reward.lock_id),
-                              msg->msg,
-                              msg->msgLength);
+    return uint256_to_decimal(lock->value, INT256_LENGTH, msg->msg, msg->msgLength);
 }
 
 void handle_query_contract_ui(ethQueryContractUI_t *msg) {
@@ -143,8 +140,10 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
             }
             break;
         case REWARD_INIT_FAST_UNLOCK:
-            if (msg->screenIndex < context->lisk.body.reward.lock_ids_len) {
-                ret = set_lock_ids_ui(msg, context);
+            if (msg->screenIndex < context->lisk.body.rewardFastUnlock.lock_ids_len) {
+                ret =
+                    set_lock_ids_ui(msg,
+                                    &context->lisk.body.rewardFastUnlock.lock_id[msg->screenIndex]);
             } else {
                 PRINTF("Received an invalid screenIndex\n");
             }

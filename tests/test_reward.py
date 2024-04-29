@@ -84,7 +84,6 @@ def test_initiate_fast_unlock(backend, firmware, navigator, test_name, wallet_ad
                 100,
                 34532,
                 34,
-                1
             ]
     ])
 

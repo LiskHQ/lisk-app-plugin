@@ -46,6 +46,10 @@ typedef enum selector_e {
     SELECTORS_LIST(TO_ENUM) SELECTOR_COUNT,
 } selector_t;
 
+typedef struct {
+    uint8_t value[INT256_LENGTH];
+} lock_t;
+
 // This array will be automatically expanded to map all selector_t names with the correct value.
 // Do not modify !
 extern const uint32_t SELECTORS[SELECTOR_COUNT];
@@ -76,7 +80,8 @@ typedef enum {
     // Reward init fast unlock parameters
     LOCK_ID,
     LOCK_IDS_LEN,
-    LOCK_ID_OFFSET_1,
+    LOCK_ID_NEXT,
+    OFFSET,
 } parameter;
 
 typedef struct {
@@ -87,12 +92,16 @@ typedef struct {
             uint8_t public_key[PUBLIC_KEY_LENGTH];
             uint8_t lsk_address[LISK_ADDRESS_LENGTH];
         } claim;
+
         struct {
             uint8_t lock_amount[INT256_LENGTH];
             uint8_t lock_duration[INT256_LENGTH];
+        } rewardCreatePosition;
+
+        struct {
             uint16_t lock_ids_len;
-            uint8_t lock_id[INT256_LENGTH];
-        } reward;
+            lock_t lock_id[4];
+        } rewardFastUnlock;
     } body;
 } lisk_t;
 
