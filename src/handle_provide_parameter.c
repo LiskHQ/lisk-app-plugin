@@ -1,5 +1,7 @@
 #include "plugin.h"
 
+uint16_t counter = 0;
+
 static void handle_claim_regular_account(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
         case PROOF:  // _proof
@@ -96,7 +98,6 @@ static void handle_reward_create_position(ethPluginProvideParameter_t *msg, cont
     }
 }
 
-uint16_t counter = 0;
 static void handle_lock_ids_array(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
         case OFFSET:
@@ -119,18 +120,10 @@ static void handle_lock_ids_array(ethPluginProvideParameter_t *msg, context_t *c
                            msg->parameter,
                            INT256_LENGTH);
             if (context->lisk.body.reward.lock_ids_len > 1) {
-                context->next_param = LOCK_ID_NEXT;
                 counter++;
             } else {
                 context->next_param = NONE;
             }
-            break;
-        case LOCK_ID_NEXT:
-            copy_parameter(context->lisk.body.reward.lock_id[counter].value,
-                           msg->parameter,
-                           INT256_LENGTH);
-            counter++;
-            context->next_param = LOCK_ID;
             break;
         case NONE:
             break;
