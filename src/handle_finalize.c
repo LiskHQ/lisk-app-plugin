@@ -19,6 +19,9 @@ void handle_finalize(ethPluginFinalize_t *msg) {
         case REWARD_RESUME_UNLOCKING:
             msg->numScreens = context->lisk.body.reward.lock_ids_len;
             break;
+        case REWARD_INC_LOCKING_AMOUNT:
+            msg->numScreens = context->lisk.body.rewardIncLockingAmount.len * 2;
+            break;
         default:
             msg->result = ETH_PLUGIN_RESULT_ERROR;
             return;

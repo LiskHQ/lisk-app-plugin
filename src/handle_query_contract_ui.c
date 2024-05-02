@@ -84,6 +84,16 @@ static bool set_lock_ids_ui(ethQueryContractUI_t *msg, lock_t *lock) {
     return uint256_to_decimal(lock->value, INT256_LENGTH, msg->msg, msg->msgLength);
 }
 
+// Set UI for "Increase Amount" screen.
+static bool set_amount_ui(ethQueryContractUI_t *msg, lock_t *amount) {
+    strlcpy(msg->title, "Increase Amount", msg->titleLength);
+
+    uint8_t decimals = 18;
+    const char *ticker = "LSK";
+
+    return amountToString(amount->value, INT256_LENGTH, decimals, ticker, msg->msg, msg->msgLength);
+}
+
 void handle_query_contract_ui(ethQueryContractUI_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     bool ret = false;
@@ -147,6 +157,26 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                 ret = set_lock_ids_ui(msg, &context->lisk.body.reward.lock_id[msg->screenIndex]);
             } else {
                 PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_INC_LOCKING_AMOUNT:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret =
+                        set_lock_ids_ui(msg, &context->lisk.body.rewardIncLockingAmount.lock_id[0]);
+                    break;
+                case 1:
+                    ret = set_amount_ui(msg, &context->lisk.body.rewardIncLockingAmount.amount[0]);
+                    break;
+                case 2:
+                    ret =
+                        set_lock_ids_ui(msg, &context->lisk.body.rewardIncLockingAmount.lock_id[1]);
+                    break;
+                case 3:
+                    ret = set_amount_ui(msg, &context->lisk.body.rewardIncLockingAmount.amount[1]);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
             }
             break;
         default:

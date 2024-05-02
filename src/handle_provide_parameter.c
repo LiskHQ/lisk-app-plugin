@@ -131,6 +131,49 @@ static void handle_lock_ids_array(ethPluginProvideParameter_t *msg, context_t *c
             break;
     }
 }
+
+static void handle_increase_locking_amount(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case OFFSET:
+            context->next_param = INCREASE_LEN;
+            break;
+        case INCREASE_LEN:
+            if (!U2BE_from_parameter(msg->parameter,
+                                     &context->lisk.body.rewardIncLockingAmount.len) ||
+                context->lisk.body.rewardIncLockingAmount.len > 2 ||
+                context->lisk.body.rewardIncLockingAmount.len == 0) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+            }
+
+            context->next_param = LOCK_ID;
+            break;
+        case LOCK_ID:
+            copy_parameter(context->lisk.body.rewardIncLockingAmount.lock_id[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            context->next_param = LOCK_AMOUNT;
+            break;
+        case LOCK_AMOUNT:
+            copy_parameter(context->lisk.body.rewardIncLockingAmount.amount[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            if (context->lisk.body.rewardIncLockingAmount.len > 1 &&
+                counter < context->lisk.body.rewardIncLockingAmount.len - 1) {
+                counter++;
+                context->next_param = LOCK_ID;
+            } else {
+                context->next_param = NONE;
+            }
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
 void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     // We use `%.*H`: it's a utility function to print bytes. You first give
@@ -159,6 +202,9 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
         case REWARD_PAUSE_UNLOCKING:
         case REWARD_RESUME_UNLOCKING:
             handle_lock_ids_array(msg, context);
+            break;
+        case REWARD_INC_LOCKING_AMOUNT:
+            handle_increase_locking_amount(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

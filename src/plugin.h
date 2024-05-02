@@ -35,7 +35,8 @@
     X(REWARD_INIT_FAST_UNLOCK, 0x864c8725)       \
     X(REWARD_CLAIM_REWARDS, 0x5eac6239)          \
     X(REWARD_RESUME_UNLOCKING, 0x82d4ae58)       \
-    X(REWARD_PAUSE_UNLOCKING, 0xfe042b5b)
+    X(REWARD_PAUSE_UNLOCKING, 0xfe042b5b)        \
+    X(REWARD_INC_LOCKING_AMOUNT, 0xf94415ca)
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -81,6 +82,8 @@ typedef enum {
     LOCK_DURATION,
     LOCK_ID,
     LOCK_IDS_LEN,
+    LOCK_ID_NEXT,
+    INCREASE_LEN,
     OFFSET,
 } parameter;
 
@@ -102,6 +105,11 @@ typedef struct {
             uint16_t lock_ids_len;
             lock_t lock_id[4];
         } reward;
+        struct {
+            lock_t lock_id[2];
+            lock_t amount[2];
+            uint16_t len;
+        } rewardIncLockingAmount;
     } body;
 } lisk_t;
 
