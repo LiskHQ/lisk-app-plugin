@@ -81,7 +81,6 @@ typedef enum {
     LOCK_DURATION,
     LOCK_ID,
     LOCK_IDS_LEN,
-    LOCK_ID_NEXT,
     OFFSET,
 } parameter;
 

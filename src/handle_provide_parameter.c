@@ -113,16 +113,14 @@ static void handle_lock_ids_array(ethPluginProvideParameter_t *msg, context_t *c
             context->next_param = LOCK_ID;
             break;
         case LOCK_ID:
-            if (counter == context->lisk.body.reward.lock_ids_len) {
-                context->next_param = NONE;
-            }
             copy_parameter(context->lisk.body.reward.lock_id[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
-            if (context->lisk.body.reward.lock_ids_len > 1) {
-                counter++;
-            } else {
+            if (counter == context->lisk.body.reward.lock_ids_len - 1) {
+                counter = 0;
                 context->next_param = NONE;
+            } else {
+                counter++;
             }
             break;
         case NONE:
