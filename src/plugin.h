@@ -36,7 +36,8 @@
     X(REWARD_CLAIM_REWARDS, 0x5eac6239)          \
     X(REWARD_RESUME_UNLOCKING, 0x82d4ae58)       \
     X(REWARD_PAUSE_UNLOCKING, 0xfe042b5b)        \
-    X(REWARD_INC_LOCKING_AMOUNT, 0xf94415ca)
+    X(REWARD_INC_LOCKING_AMOUNT, 0xf94415ca)     \
+    X(REWARD_Extend_Duration, 0x2d412a71)
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -52,7 +53,7 @@ typedef enum selector_e {
 
 typedef struct {
     uint8_t value[INT256_LENGTH];
-} lock_t;
+} arr_uint8_t;
 
 // This array will be automatically expanded to map all selector_t names with the correct value.
 // Do not modify !
@@ -103,13 +104,18 @@ typedef struct {
 
         struct {
             uint16_t lock_ids_len;
-            lock_t lock_id[4];
+            arr_uint8_t lock_id[4];
         } reward;
         struct {
-            lock_t lock_id[2];
-            lock_t amount[2];
+            arr_uint8_t lock_id[2];
+            arr_uint8_t amount[2];
             uint16_t len;
         } rewardIncLockingAmount;
+        struct {
+            arr_uint8_t lock_id[2];
+            arr_uint8_t duration[2];
+            uint16_t len;
+        } rewardExtendDuration;
     } body;
 } lisk_t;
 

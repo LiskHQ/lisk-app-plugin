@@ -174,6 +174,48 @@ static void handle_increase_locking_amount(ethPluginProvideParameter_t *msg, con
     }
 }
 
+static void handle_extend_duration(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case OFFSET:
+            context->next_param = INCREASE_LEN;
+            break;
+        case INCREASE_LEN:
+            if (!U2BE_from_parameter(msg->parameter,
+                                     &context->lisk.body.rewardExtendDuration.len) ||
+                context->lisk.body.rewardExtendDuration.len > 2 ||
+                context->lisk.body.rewardExtendDuration.len == 0) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+            }
+
+            context->next_param = LOCK_ID;
+            break;
+        case LOCK_ID:
+            copy_parameter(context->lisk.body.rewardExtendDuration.lock_id[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            context->next_param = LOCK_DURATION;
+            break;
+        case LOCK_DURATION:
+            copy_parameter(context->lisk.body.rewardExtendDuration.duration[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            if (context->lisk.body.rewardExtendDuration.len > 1 &&
+                counter < context->lisk.body.rewardExtendDuration.len - 1) {
+                counter++;
+                context->next_param = LOCK_ID;
+            } else {
+                context->next_param = NONE;
+            }
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
 void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     // We use `%.*H`: it's a utility function to print bytes. You first give
@@ -205,6 +247,9 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
             break;
         case REWARD_INC_LOCKING_AMOUNT:
             handle_increase_locking_amount(msg, context);
+            break;
+        case REWARD_Extend_Duration:
+            handle_extend_duration(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

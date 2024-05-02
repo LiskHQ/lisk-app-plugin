@@ -32,6 +32,9 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
     } else if (context->selectorIndex == REWARD_INC_LOCKING_AMOUNT) {
         strlcpy(msg->version, "Inc Locking Amount", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_Extend_Duration) {
+        strlcpy(msg->version, "Extend Duration", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
         PRINTF("Selector index: %d not supported\n", context->selectorIndex);
         msg->result = ETH_PLUGIN_RESULT_ERROR;

@@ -20,6 +20,7 @@ void handle_finalize(ethPluginFinalize_t *msg) {
             msg->numScreens = context->lisk.body.reward.lock_ids_len;
             break;
         case REWARD_INC_LOCKING_AMOUNT:
+        case REWARD_Extend_Duration:
             msg->numScreens = context->lisk.body.rewardIncLockingAmount.len * 2;
             break;
         default:
