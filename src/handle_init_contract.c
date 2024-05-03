@@ -59,6 +59,9 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
         case REWARD_DELETE_POSITIONS:
             context->next_param = OFFSET;
             break;
+        case CLAIM_AIRDROP:
+            context->next_param = LSK_ADDRESS;
+            break;
         // Keep this
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);

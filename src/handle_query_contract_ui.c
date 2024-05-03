@@ -22,7 +22,11 @@ static bool set_bytes_to_hex(char *msg, size_t msgLen, const uint8_t *value, uin
 
 // Set UI for "Claim LSK" screen.
 static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
-    strlcpy(msg->title, "Claim LSK", msg->titleLength);
+    if (context->selectorIndex == CLAIM_AIRDROP) {
+        strlcpy(msg->title, "Claim Airdrop (LSK)", msg->titleLength);
+    } else {
+        strlcpy(msg->title, "Claim LSK", msg->titleLength);
+    }
 
     uint8_t decimals = 18;
     const char *ticker = "LSK";
@@ -47,7 +51,11 @@ static bool set_sender_public_key_ui(ethQueryContractUI_t *msg, context_t *conte
 
 // Set UI for "Sender Address" screen.
 static bool set_sender_address_ui(ethQueryContractUI_t *msg, context_t *context) {
-    strlcpy(msg->title, "Sender Lisk Address", msg->titleLength);
+    if (context->selectorIndex == CLAIM_AIRDROP) {
+        strlcpy(msg->title, "Lisk Address", msg->titleLength);
+    } else {
+        strlcpy(msg->title, "Sender Lisk Address", msg->titleLength);
+    }
 
     // Prefix the address with `0x`.
     msg->msg[0] = '0';
@@ -276,6 +284,18 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                 case 3:
                     ret =
                         set_duration_ui(msg, &context->lisk.body.rewardExtendDuration.duration[1]);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case CLAIM_AIRDROP:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_sender_address_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_claim_ui(msg, context);
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
