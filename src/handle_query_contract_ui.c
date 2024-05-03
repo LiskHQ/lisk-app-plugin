@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "plugin.h"
 
 static bool set_bytes_to_hex(char *msg, size_t msgLen, const uint8_t *value, uint16_t valueLen) {
@@ -167,6 +168,30 @@ static bool set_unused_delay_ui(ethQueryContractUI_t *msg, context_t *context) {
                               msg->msgLength);
 }
 
+// Set UI for "Proposal ID" screen.
+static bool set_proposal_id_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Proposal ID", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.governor.proposal_id,
+                              INT256_LENGTH,
+                              msg->msg,
+                              msg->msgLength);
+}
+
+// Set UI for "Support" screen.
+static bool set_support_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Support", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.governor.support,
+                              sizeof(context->lisk.body.governor.support),
+                              msg->msg,
+                              msg->msgLength);
+}
+
+static bool set_reason_ui(ethQueryContractUI_t *msg, string_uint8_t *reason) {
+    strlcpy(msg->title, "Reason", msg->titleLength);
+    snprintf(msg->msg, msg->msgLength, "%s", reason->value);
+    return true;
+}
+
 void handle_query_contract_ui(ethQueryContractUI_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     bool ret = false;
@@ -296,6 +321,33 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 1:
                     ret = set_claim_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case GOVERNOR_CAST_VOTE:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_proposal_id_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_support_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case GOVERNOR_CAST_VOTE_WITH_REASON:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_proposal_id_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_support_ui(msg, context);
+                    break;
+                case 2:
+                    ret = set_reason_ui(msg, &context->lisk.body.governor.reason);
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");

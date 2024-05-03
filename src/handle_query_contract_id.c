@@ -47,6 +47,10 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
     } else if (context->selectorIndex == CLAIM_AIRDROP) {
         strlcpy(msg->version, "Claim Airdrop", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == GOVERNOR_CAST_VOTE ||
+               context->selectorIndex == GOVERNOR_CAST_VOTE_WITH_REASON) {
+        strlcpy(msg->version, "Cast Vote", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
         PRINTF("Selector index: %d not supported\n", context->selectorIndex);
         msg->result = ETH_PLUGIN_RESULT_ERROR;

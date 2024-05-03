@@ -42,7 +42,10 @@
     X(REWARD_ADD_UNUSED_REWARDS, 0x315d4222)     \
     X(REWARD_FUND_STAKING_REWARDS, 0xebcb3818)   \
     X(REWARD_Extend_Duration, 0x2d412a71)        \
-    X(CLAIM_AIRDROP, 0x0c1646b7)
+    X(CLAIM_AIRDROP, 0x0c1646b7)                 \
+    X(GOVERNOR_PROPOSE, 0x7d5e81e2)              \
+    X(GOVERNOR_CAST_VOTE, 0x56781388)            \
+    X(GOVERNOR_CAST_VOTE_WITH_REASON, 0x7b3c71d3)
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -92,7 +95,18 @@ typedef enum {
     INCREASE_LEN,
     OFFSET,
     DELAY,
+
+    // Governor contract parameters
+    PROPOSAL_ID,
+    SUPPORT,
+    REASON,
+    REASON_LENGTH,
 } parameter;
+
+typedef struct {
+    uint8_t len;
+    uint8_t value[PARAMETER_LENGTH];
+} string_uint8_t;
 
 typedef struct {
     union {
@@ -127,6 +141,13 @@ typedef struct {
             uint8_t duration[INT256_LENGTH];
             uint8_t delay[INT256_LENGTH];
         } rewardAddUnusedRewards;
+
+        struct {
+            uint8_t proposal_id[INT256_LENGTH];
+            uint8_t support[INT256_LENGTH];
+            string_uint8_t reason;
+        } governor;
+
     } body;
 } lisk_t;
 

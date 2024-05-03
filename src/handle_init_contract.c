@@ -62,6 +62,10 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
         case CLAIM_AIRDROP:
             context->next_param = LSK_ADDRESS;
             break;
+        case GOVERNOR_CAST_VOTE:
+        case GOVERNOR_CAST_VOTE_WITH_REASON:
+            context->next_param = PROPOSAL_ID;
+            break;
         // Keep this
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);
