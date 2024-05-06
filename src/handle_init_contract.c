@@ -57,6 +57,7 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
         case REWARD_INC_LOCKING_AMOUNT:
         case REWARD_EXTEND_DURATION:
         case REWARD_DELETE_POSITIONS:
+        case GOVERNOR_PROPOSE:
             context->next_param = OFFSET;
             break;
         case CLAIM_AIRDROP:

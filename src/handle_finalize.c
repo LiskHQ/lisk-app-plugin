@@ -33,6 +33,9 @@ void handle_finalize(ethPluginFinalize_t *msg) {
         case GOVERNOR_CAST_VOTE_WITH_REASON:
             msg->numScreens = 3;
             break;
+        case GOVERNOR_PROPOSE:
+            msg->numScreens = context->lisk.body.governorPropose.target_len * 2;
+            break;
         default:
             msg->result = ETH_PLUGIN_RESULT_ERROR;
             return;

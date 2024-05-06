@@ -353,6 +353,87 @@ static void handle_governor_cast_vote_with_reason(ethPluginProvideParameter_t *m
     }
 }
 
+static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t *context) {
+    if (context->go_to_offset) {
+        if (msg->parameterOffset != context->offset + SELECTOR_SIZE) {
+            return;
+        }
+        context->go_to_offset = false;
+    }
+
+    switch (context->next_param) {
+        case OFFSET:
+            context->offset = U2BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->offset));
+            context->go_to_offset = true;
+            context->next_param = PROPOSE_TARGET_LEN;
+            break;
+        case PROPOSE_TARGET_LEN:
+            if (!U2BE_from_parameter(msg->parameter,
+                                     &context->lisk.body.governorPropose.target_len) ||
+                context->lisk.body.governorPropose.target_len > 2 ||
+                context->lisk.body.governorPropose.target_len == 0) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+            }
+
+            context->offset = msg->parameterOffset - SELECTOR_SIZE + PARAMETER_LENGTH;
+            context->go_to_offset = true;
+            context->next_param = TARGET_ADDRESS;
+            break;
+        case TARGET_ADDRESS:
+            copy_address(context->lisk.body.governorPropose.targets[counter].value,
+                         msg->parameter,
+                         sizeof(context->lisk.body.governorPropose.targets[counter].value));
+            if (counter + 1 < context->lisk.body.governorPropose.target_len) {
+                counter++;
+                context->next_param = SECOND_TARGET_ADDRESS;
+            } else {
+                context->next_param = PROPOSE_VALUE_LEN;
+            }
+            break;
+        case SECOND_TARGET_ADDRESS:
+            copy_address(context->lisk.body.governorPropose.targets[counter].value,
+                         msg->parameter,
+                         sizeof(context->lisk.body.governorPropose.targets[counter].value));
+            counter = 0;
+            context->next_param = PROPOSE_VALUE_LEN;
+            break;
+        case PROPOSE_VALUE_LEN:
+            if (!U2BE_from_parameter(msg->parameter,
+                                     &context->lisk.body.governorPropose.value_len) ||
+                context->lisk.body.governorPropose.value_len > 2 ||
+                context->lisk.body.governorPropose.value_len == 0 ||
+                context->lisk.body.governorPropose.target_len !=
+                    context->lisk.body.governorPropose.value_len) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+            }
+            context->next_param = VALUE;
+            break;
+        case VALUE:
+            copy_parameter(context->lisk.body.governorPropose.values[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            if (counter + 1 < context->lisk.body.governorPropose.value_len) {
+                counter++;
+                context->next_param = SECOND_VALUE;
+            } else {
+                context->next_param = NONE;
+            }
+            break;
+        case SECOND_VALUE:
+            copy_parameter(context->lisk.body.governorPropose.values[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            context->next_param = NONE;
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->next_param);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
 void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     // We use `%.*H`: it's a utility function to print bytes. You first give
@@ -401,6 +482,9 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
             break;
         case GOVERNOR_CAST_VOTE_WITH_REASON:
             handle_governor_cast_vote_with_reason(msg, context);
+            break;
+        case GOVERNOR_PROPOSE:
+            handle_governor_propose(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

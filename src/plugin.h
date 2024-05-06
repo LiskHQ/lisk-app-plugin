@@ -63,6 +63,10 @@ typedef struct {
     uint8_t value[INT256_LENGTH];
 } arr_uint8_t;
 
+typedef struct {
+    uint8_t value[ADDRESS_LENGTH];
+} arr_address_t;
+
 // This array will be automatically expanded to map all selector_t names with the correct value.
 // Do not modify !
 extern const uint32_t SELECTORS[SELECTOR_COUNT];
@@ -101,6 +105,12 @@ typedef enum {
     SUPPORT,
     REASON,
     REASON_LENGTH,
+    PROPOSE_TARGET_LEN,
+    PROPOSE_VALUE_LEN,
+    TARGET_ADDRESS,
+    SECOND_TARGET_ADDRESS,
+    VALUE,
+    SECOND_VALUE,
 } parameter;
 
 typedef struct {
@@ -147,6 +157,12 @@ typedef struct {
             uint8_t support[INT256_LENGTH];
             string_uint8_t reason;
         } governor;
+        struct {
+            uint16_t target_len;
+            uint16_t value_len;
+            arr_address_t targets[2];
+            arr_uint8_t values[2];
+        } governorPropose;
 
     } body;
 } lisk_t;
