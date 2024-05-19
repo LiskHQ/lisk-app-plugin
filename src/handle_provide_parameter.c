@@ -243,6 +243,7 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
         case REWARD_CLAIM_REWARDS:
         case REWARD_PAUSE_UNLOCKING:
         case REWARD_RESUME_UNLOCKING:
+        case REWARD_DELETE_POSITIONS:
             handle_lock_ids_array(msg, context);
             break;
         case REWARD_INC_LOCKING_AMOUNT:

@@ -159,6 +159,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case REWARD_CLAIM_REWARDS:
         case REWARD_PAUSE_UNLOCKING:
         case REWARD_RESUME_UNLOCKING:
+        case REWARD_DELETE_POSITIONS:
             if (msg->screenIndex < context->lisk.body.reward.lock_ids_len) {
                 ret = set_lock_ids_ui(msg, &context->lisk.body.reward.lock_id[msg->screenIndex]);
             } else {

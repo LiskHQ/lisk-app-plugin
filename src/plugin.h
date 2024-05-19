@@ -37,7 +37,8 @@
     X(REWARD_RESUME_UNLOCKING, 0x82d4ae58)       \
     X(REWARD_PAUSE_UNLOCKING, 0xfe042b5b)        \
     X(REWARD_INC_LOCKING_AMOUNT, 0xf94415ca)     \
-    X(REWARD_EXTEND_DURATION, 0x2d412a71)
+    X(REWARD_EXTEND_DURATION, 0x2d412a71)        \
+    X(REWARD_DELETE_POSITIONS, 0x221b2b41)
 
 // Xmacro helpers to define the enum and map
 // Do not modify !

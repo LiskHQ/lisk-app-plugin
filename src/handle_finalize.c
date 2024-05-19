@@ -17,6 +17,7 @@ void handle_finalize(ethPluginFinalize_t *msg) {
         case REWARD_CLAIM_REWARDS:
         case REWARD_PAUSE_UNLOCKING:
         case REWARD_RESUME_UNLOCKING:
+        case REWARD_DELETE_POSITIONS:
             msg->numScreens = context->lisk.body.reward.lock_ids_len;
             break;
         case REWARD_INC_LOCKING_AMOUNT:

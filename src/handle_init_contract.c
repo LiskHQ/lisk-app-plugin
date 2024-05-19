@@ -54,6 +54,7 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
         case REWARD_RESUME_UNLOCKING:
         case REWARD_INC_LOCKING_AMOUNT:
         case REWARD_EXTEND_DURATION:
+        case REWARD_DELETE_POSITIONS:
             context->next_param = OFFSET;
             break;
         // Keep this
