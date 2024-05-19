@@ -80,8 +80,8 @@ typedef enum {
     ED25519_SIGNATURES,
 
     // Reward contract parameters
-    LOCK_AMOUNT,
-    LOCK_DURATION,
+    AMOUNT,
+    DURATION,
     LOCK_ID,
     LOCK_IDS_LEN,
     LOCK_ID_NEXT,

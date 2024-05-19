@@ -77,13 +77,13 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
 
 static void handle_reward_create_position(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
-        case LOCK_AMOUNT:  // amount
+        case AMOUNT:  // amount
             copy_parameter(context->lisk.body.rewardCreatePosition.lock_amount,
                            msg->parameter,
                            sizeof(context->lisk.body.rewardCreatePosition.lock_amount));
-            context->next_param = LOCK_DURATION;
+            context->next_param = DURATION;
             break;
-        case LOCK_DURATION:  // lockingDuration
+        case DURATION:  // lockingDuration
             copy_parameter(context->lisk.body.rewardCreatePosition.lock_duration,
                            msg->parameter,
                            sizeof(context->lisk.body.rewardCreatePosition.lock_duration));
@@ -151,9 +151,9 @@ static void handle_increase_locking_amount(ethPluginProvideParameter_t *msg, con
             copy_parameter(context->lisk.body.rewardIncLockingAmount.lock_id[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
-            context->next_param = LOCK_AMOUNT;
+            context->next_param = AMOUNT;
             break;
-        case LOCK_AMOUNT:
+        case AMOUNT:
             copy_parameter(context->lisk.body.rewardIncLockingAmount.amount[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
@@ -193,9 +193,9 @@ static void handle_extend_duration(ethPluginProvideParameter_t *msg, context_t *
             copy_parameter(context->lisk.body.rewardExtendDuration.lock_id[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
-            context->next_param = LOCK_DURATION;
+            context->next_param = DURATION;
             break;
-        case LOCK_DURATION:
+        case DURATION:
             copy_parameter(context->lisk.body.rewardExtendDuration.duration[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
