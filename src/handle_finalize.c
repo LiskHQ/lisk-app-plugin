@@ -9,6 +9,7 @@ void handle_finalize(ethPluginFinalize_t *msg) {
         case CLAIM_REGULAR_ACCOUNT:
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
         case REWARD_ADD_UNUSED_REWARDS:
+        case REWARD_FUND_STAKING_REWARDS:
             msg->numScreens = 3;
             break;
         case REWARD_CREATE_POSITION:

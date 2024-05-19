@@ -276,6 +276,7 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
             handle_lock_ids_array(msg, context);
             break;
         case REWARD_ADD_UNUSED_REWARDS:
+        case REWARD_FUND_STAKING_REWARDS:
             handle_add_unused_rewards(msg, context);
             break;
         case REWARD_INC_LOCKING_AMOUNT:

@@ -41,6 +41,9 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
     } else if (context->selectorIndex == REWARD_ADD_UNUSED_REWARDS) {
         strlcpy(msg->version, "Add Unused Rewards", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_FUND_STAKING_REWARDS) {
+        strlcpy(msg->version, "Fund Staking Rewards", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
         PRINTF("Selector index: %d not supported\n", context->selectorIndex);
         msg->result = ETH_PLUGIN_RESULT_ERROR;
