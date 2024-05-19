@@ -38,7 +38,8 @@
     X(REWARD_PAUSE_UNLOCKING, 0xfe042b5b)        \
     X(REWARD_INC_LOCKING_AMOUNT, 0xf94415ca)     \
     X(REWARD_EXTEND_DURATION, 0x2d412a71)        \
-    X(REWARD_DELETE_POSITIONS, 0x221b2b41)
+    X(REWARD_DELETE_POSITIONS, 0x221b2b41)       \
+    X(REWARD_ADD_UNUSED_REWARDS, 0x315d4222)
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -87,6 +88,7 @@ typedef enum {
     LOCK_ID_NEXT,
     INCREASE_LEN,
     OFFSET,
+    DELAY,
 } parameter;
 
 typedef struct {
@@ -117,6 +119,11 @@ typedef struct {
             arr_uint8_t duration[2];
             uint16_t len;
         } rewardExtendDuration;
+        struct {
+            uint8_t amount[INT256_LENGTH];
+            uint8_t duration[INT256_LENGTH];
+            uint8_t delay[INT256_LENGTH];
+        } rewardAddUnusedRewards;
     } body;
 } lisk_t;
 

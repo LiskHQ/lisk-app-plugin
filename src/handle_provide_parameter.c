@@ -216,6 +216,35 @@ static void handle_extend_duration(ethPluginProvideParameter_t *msg, context_t *
     }
 }
 
+static void handle_add_unused_rewards(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case AMOUNT:
+            copy_parameter(context->lisk.body.rewardAddUnusedRewards.amount,
+                           msg->parameter,
+                           sizeof(context->lisk.body.rewardAddUnusedRewards.amount));
+            context->next_param = DURATION;
+            break;
+        case DURATION:
+            copy_parameter(context->lisk.body.rewardAddUnusedRewards.duration,
+                           msg->parameter,
+                           sizeof(context->lisk.body.rewardAddUnusedRewards.duration));
+            context->next_param = DELAY;
+            break;
+        case DELAY:
+            copy_parameter(context->lisk.body.rewardAddUnusedRewards.delay,
+                           msg->parameter,
+                           sizeof(context->lisk.body.rewardAddUnusedRewards.delay));
+            context->next_param = UNEXPECTED_PARAMETER;
+            break;
+        case UNEXPECTED_PARAMETER:
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->next_param);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
 void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     // We use `%.*H`: it's a utility function to print bytes. You first give
@@ -245,6 +274,9 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
         case REWARD_RESUME_UNLOCKING:
         case REWARD_DELETE_POSITIONS:
             handle_lock_ids_array(msg, context);
+            break;
+        case REWARD_ADD_UNUSED_REWARDS:
+            handle_add_unused_rewards(msg, context);
             break;
         case REWARD_INC_LOCKING_AMOUNT:
             handle_increase_locking_amount(msg, context);

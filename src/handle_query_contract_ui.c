@@ -100,6 +100,39 @@ static bool set_duration_ui(ethQueryContractUI_t *msg, arr_uint8_t *duration) {
     return uint256_to_decimal(duration->value, INT256_LENGTH, msg->msg, msg->msgLength);
 }
 
+// Set UI for "Unused Rewards Amount" screen.
+static bool set_unused_amount_ui(ethQueryContractUI_t *msg, const context_t *context) {
+    strlcpy(msg->title, "Amount", msg->titleLength);
+
+    uint8_t decimals = 18;
+    const char *ticker = "LSK";
+
+    return amountToString(context->lisk.body.rewardAddUnusedRewards.amount,
+                          sizeof(context->lisk.body.rewardAddUnusedRewards.amount),
+                          decimals,
+                          ticker,
+                          msg->msg,
+                          msg->msgLength);
+}
+
+// Set UI for "Add Unused Duration" screen.
+static bool set_unused_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Duration (in days)", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.rewardAddUnusedRewards.duration,
+                              sizeof(context->lisk.body.rewardAddUnusedRewards.duration),
+                              msg->msg,
+                              msg->msgLength);
+}
+
+// Set UI for "Add Unused Duration" screen.
+static bool set_unused_delay_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Delay (in days)", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.rewardAddUnusedRewards.delay,
+                              sizeof(context->lisk.body.rewardAddUnusedRewards.delay),
+                              msg->msg,
+                              msg->msgLength);
+}
+
 void handle_query_contract_ui(ethQueryContractUI_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     bool ret = false;
@@ -150,6 +183,22 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 1:
                     ret = set_lock_duration_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_ADD_UNUSED_REWARDS:
+            switch (msg->screenIndex)
+            {
+                case 0:
+                    ret = set_unused_amount_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_unused_duration_ui(msg, context);
+                    break;
+                case 2:
+                    ret = set_unused_delay_ui(msg, context);
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");

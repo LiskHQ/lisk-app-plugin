@@ -46,6 +46,7 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
             context->next_param = PROOF;
             break;
         case REWARD_CREATE_POSITION:
+        case REWARD_ADD_UNUSED_REWARDS:
             context->next_param = AMOUNT;
             break;
         case REWARD_INIT_FAST_UNLOCK:
