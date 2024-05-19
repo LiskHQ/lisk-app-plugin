@@ -185,7 +185,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     PRINTF("Received an invalid screenIndex\n");
             }
             break;
-        case REWARD_Extend_Duration:
+        case REWARD_EXTEND_DURATION:
             switch (msg->screenIndex) {
                 case 0:
                     ret = set_lock_ids_ui(msg, &context->lisk.body.rewardExtendDuration.lock_id[0]);

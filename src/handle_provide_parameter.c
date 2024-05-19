@@ -248,7 +248,7 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
         case REWARD_INC_LOCKING_AMOUNT:
             handle_increase_locking_amount(msg, context);
             break;
-        case REWARD_Extend_Duration:
+        case REWARD_EXTEND_DURATION:
             handle_extend_duration(msg, context);
             break;
         default:

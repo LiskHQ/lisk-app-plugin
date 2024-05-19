@@ -32,7 +32,7 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
     } else if (context->selectorIndex == REWARD_INC_LOCKING_AMOUNT) {
         strlcpy(msg->version, "Inc Locking Amount", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
-    } else if (context->selectorIndex == REWARD_Extend_Duration) {
+    } else if (context->selectorIndex == REWARD_EXTEND_DURATION) {
         strlcpy(msg->version, "Extend Duration", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
