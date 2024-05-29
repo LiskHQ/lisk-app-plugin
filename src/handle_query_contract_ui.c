@@ -1,52 +1,42 @@
 #include "plugin.h"
 
-// EDIT THIS: You need to adapt / remove the static functions (set_send_ui, set_receive_ui ...) to
-// match what you wish to display.
+// Set UI for "Claim LSK" screen.
+static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
+    strlcpy(msg->title, "Claim LSK", msg->titleLength);
 
-// Set UI for the "Send" screen.
-// EDIT THIS: Adapt / remove this function to your needs.
-static bool set_send_ui(ethQueryContractUI_t *msg) {
-    strlcpy(msg->title, "Send", msg->titleLength);
+    uint8_t decimals = 18;
+    const char *ticker = "LSK";
 
-    const uint8_t *eth_amount = msg->pluginSharedRO->txContent->value.value;
-    uint8_t eth_amount_size = msg->pluginSharedRO->txContent->value.length;
-
-    // Converts the uint256 number located in `eth_amount` to its string representation and
-    // copies this to `msg->msg`.
-    return amountToString(eth_amount,
-                          eth_amount_size,
-                          WEI_TO_ETHER,
-                          "ETH",
-                          msg->msg,
-                          msg->msgLength);
-}
-
-// Set UI for "Receive" screen.
-// EDIT THIS: Adapt / remove this function to your needs.
-static bool set_receive_ui(ethQueryContractUI_t *msg, const context_t *context) {
-    strlcpy(msg->title, "Receive Min.", msg->titleLength);
-
-    uint8_t decimals = context->decimals;
-    const char *ticker = context->ticker;
-
-    // If the token look up failed, use the default network ticker along with the default decimals.
-    if (!context->token_found) {
-        decimals = WEI_TO_ETHER;
-        ticker = msg->network_ticker;
-    }
-
-    return amountToString(context->amount_received,
-                          sizeof(context->amount_received),
+    return amountToString(context->lisk.body.claim.claim_amount,
+                          sizeof(context->lisk.body.claim.claim_amount),
                           decimals,
                           ticker,
                           msg->msg,
                           msg->msgLength);
 }
 
-// Set UI for "Beneficiary" screen.
-// EDIT THIS: Adapt / remove this function to your needs.
-static bool set_beneficiary_ui(ethQueryContractUI_t *msg, context_t *context) {
-    strlcpy(msg->title, "Beneficiary", msg->titleLength);
+// Set UI for "Sender Public Key" screen.
+static bool set_sender_public_key_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Sender Lisk Public Key", msg->titleLength);
+    array_hexstr(msg->msg, context->lisk.body.claim.public_key, PUBLIC_KEY_LENGTH);
+    return true;
+}
+
+// Set UI for "Sender Address" screen.
+static bool set_sender_address_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Sender Lisk Address", msg->titleLength);
+
+    // Prefix the address with `0x`.
+    msg->msg[0] = '0';
+    msg->msg[1] = 'x';
+
+    array_hexstr(msg->msg + 2, context->lisk.body.claim.lsk_address, LISK_ADDRESS_LENGTH);
+    return true;
+}
+
+// Set UI for "Recipient" screen.
+static bool set_recipient_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Recipient Address L2", msg->titleLength);
 
     // Prefix the address with `0x`.
     msg->msg[0] = '0';
@@ -59,9 +49,88 @@ static bool set_beneficiary_ui(ethQueryContractUI_t *msg, context_t *context) {
     // Get the string representation of the address stored in `context->beneficiary`. Put it in
     // `msg->msg`.
     return getEthAddressStringFromBinary(
-        context->beneficiary,
+        context->lisk.body.claim.recipient,
         msg->msg + 2,  // +2 here because we've already prefixed with '0x'.
         chainid);
+}
+
+// Set UI for "Lock Amount" screen.
+static bool set_lock_amount_ui(ethQueryContractUI_t *msg, const context_t *context) {
+    strlcpy(msg->title, "Lock Amount", msg->titleLength);
+
+    uint8_t decimals = 18;
+    const char *ticker = "LSK";
+
+    return amountToString(context->lisk.body.rewardCreatePosition.lock_amount,
+                          sizeof(context->lisk.body.rewardCreatePosition.lock_amount),
+                          decimals,
+                          ticker,
+                          msg->msg,
+                          msg->msgLength);
+}
+
+// Set UI for "Lock Duration" screen.
+static bool set_lock_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Duration (in days)", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.rewardCreatePosition.lock_duration,
+                              sizeof(context->lisk.body.rewardCreatePosition.lock_duration),
+                              msg->msg,
+                              msg->msgLength);
+}
+
+// Set UI for "Lock IDs" screen.
+static bool set_lock_ids_ui(ethQueryContractUI_t *msg, arr_uint8_t *lock) {
+    strlcpy(msg->title, "Lock ID", msg->titleLength);
+    return uint256_to_decimal(lock->value, INT256_LENGTH, msg->msg, msg->msgLength);
+}
+
+// Set UI for "Increase Amount" screen.
+static bool set_amount_ui(ethQueryContractUI_t *msg, arr_uint8_t *amount) {
+    strlcpy(msg->title, "Increase Amount", msg->titleLength);
+
+    uint8_t decimals = 18;
+    const char *ticker = "LSK";
+
+    return amountToString(amount->value, INT256_LENGTH, decimals, ticker, msg->msg, msg->msgLength);
+}
+
+// Set UI for "Extend Duration" screen.
+static bool set_duration_ui(ethQueryContractUI_t *msg, arr_uint8_t *duration) {
+    strlcpy(msg->title, "Duration", msg->titleLength);
+    return uint256_to_decimal(duration->value, INT256_LENGTH, msg->msg, msg->msgLength);
+}
+
+// Set UI for "Unused Rewards Amount" screen.
+static bool set_unused_amount_ui(ethQueryContractUI_t *msg, const context_t *context) {
+    strlcpy(msg->title, "Amount", msg->titleLength);
+
+    uint8_t decimals = 18;
+    const char *ticker = "LSK";
+
+    return amountToString(context->lisk.body.rewardAddUnusedRewards.amount,
+                          sizeof(context->lisk.body.rewardAddUnusedRewards.amount),
+                          decimals,
+                          ticker,
+                          msg->msg,
+                          msg->msgLength);
+}
+
+// Set UI for "Add Unused Duration" screen.
+static bool set_unused_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Duration (in days)", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.rewardAddUnusedRewards.duration,
+                              sizeof(context->lisk.body.rewardAddUnusedRewards.duration),
+                              msg->msg,
+                              msg->msgLength);
+}
+
+// Set UI for "Add Unused Duration" screen.
+static bool set_unused_delay_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Delay (in days)", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.rewardAddUnusedRewards.delay,
+                              sizeof(context->lisk.body.rewardAddUnusedRewards.delay),
+                              msg->msg,
+                              msg->msgLength);
 }
 
 void handle_query_contract_ui(ethQueryContractUI_t *msg) {
@@ -76,19 +145,118 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
     memset(msg->msg, 0, msg->msgLength);
 
     // EDIT THIS: Adapt the cases for the screens you'd like to display.
-    switch (msg->screenIndex) {
-        case 0:
-            ret = set_send_ui(msg);
+    switch (context->selectorIndex) {
+        case CLAIM_REGULAR_ACCOUNT:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_claim_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_sender_public_key_ui(msg, context);
+                    break;
+                case 2:
+                    ret = set_recipient_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
             break;
-        case 1:
-            ret = set_receive_ui(msg, context);
+        case CLAIM_MULTI_SIGNATURE_ACCOUNT:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_claim_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_sender_address_ui(msg, context);
+                    break;
+                case 2:
+                    ret = set_recipient_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
             break;
-        case 2:
-            ret = set_beneficiary_ui(msg, context);
+        case REWARD_CREATE_POSITION:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_lock_amount_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_lock_duration_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
             break;
-        // Keep this
+        case REWARD_ADD_UNUSED_REWARDS:
+        case REWARD_FUND_STAKING_REWARDS:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_unused_amount_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_unused_duration_ui(msg, context);
+                    break;
+                case 2:
+                    ret = set_unused_delay_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_INIT_FAST_UNLOCK:
+        case REWARD_CLAIM_REWARDS:
+        case REWARD_PAUSE_UNLOCKING:
+        case REWARD_RESUME_UNLOCKING:
+        case REWARD_DELETE_POSITIONS:
+            if (msg->screenIndex < context->lisk.body.reward.lock_ids_len) {
+                ret = set_lock_ids_ui(msg, &context->lisk.body.reward.lock_id[msg->screenIndex]);
+            } else {
+                PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_INC_LOCKING_AMOUNT:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret =
+                        set_lock_ids_ui(msg, &context->lisk.body.rewardIncLockingAmount.lock_id[0]);
+                    break;
+                case 1:
+                    ret = set_amount_ui(msg, &context->lisk.body.rewardIncLockingAmount.amount[0]);
+                    break;
+                case 2:
+                    ret =
+                        set_lock_ids_ui(msg, &context->lisk.body.rewardIncLockingAmount.lock_id[1]);
+                    break;
+                case 3:
+                    ret = set_amount_ui(msg, &context->lisk.body.rewardIncLockingAmount.amount[1]);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_EXTEND_DURATION:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_lock_ids_ui(msg, &context->lisk.body.rewardExtendDuration.lock_id[0]);
+                    break;
+                case 1:
+                    ret =
+                        set_duration_ui(msg, &context->lisk.body.rewardExtendDuration.duration[0]);
+                    break;
+                case 2:
+                    ret = set_lock_ids_ui(msg, &context->lisk.body.rewardExtendDuration.lock_id[1]);
+                    break;
+                case 3:
+                    ret =
+                        set_duration_ui(msg, &context->lisk.body.rewardExtendDuration.duration[1]);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
         default:
-            PRINTF("Received an invalid screenIndex\n");
+            PRINTF("Selector index: %d not supported\n", context->selectorIndex);
     }
     msg->result = ret ? ETH_PLUGIN_RESULT_OK : ETH_PLUGIN_RESULT_ERROR;
 }

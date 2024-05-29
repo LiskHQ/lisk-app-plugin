@@ -1,39 +1,243 @@
 #include "plugin.h"
 
-// EDIT THIS: Remove this function and write your own handlers!
-static void handle_swap_exact_eth_for_tokens(ethPluginProvideParameter_t *msg, context_t *context) {
-    if (context->go_to_offset) {
-        if (msg->parameterOffset != context->offset + SELECTOR_SIZE) {
-            return;
-        }
-        context->go_to_offset = false;
-    }
+uint16_t counter = 0;
+
+static void handle_claim_regular_account(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
-        case MIN_AMOUNT_RECEIVED:  // amountOutMin
-            copy_parameter(context->amount_received,
+        case PROOF:  // _proof
+            context->next_param = PUBLIC_KEY;
+            break;
+        case PUBLIC_KEY:  // _pubKey
+            copy_parameter(context->lisk.body.claim.public_key,
                            msg->parameter,
-                           sizeof(context->amount_received));
-            context->next_param = PATH_OFFSET;
+                           sizeof(context->lisk.body.claim.public_key));
+            context->next_param = CLAIM_AMOUNT;
             break;
-        case PATH_OFFSET:  // path
-            context->offset = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-            context->next_param = BENEFICIARY;
+        case CLAIM_AMOUNT:  // _amount
+            copy_parameter(context->lisk.body.claim.claim_amount,
+                           msg->parameter,
+                           sizeof(context->lisk.body.claim.claim_amount));
+            context->next_param = RECIPIENT;
             break;
-        case BENEFICIARY:  // to
-            copy_address(context->beneficiary, msg->parameter, sizeof(context->beneficiary));
-            context->next_param = PATH_LENGTH;
-            context->go_to_offset = true;
+        case RECIPIENT:  // _recipient
+            copy_address(context->lisk.body.claim.recipient,
+                         msg->parameter,
+                         sizeof(context->lisk.body.claim.recipient));
+            context->next_param = ED25519_SIGNATURE;
             break;
-        case PATH_LENGTH:
-            context->offset = msg->parameterOffset - SELECTOR_SIZE + PARAMETER_LENGTH * 2;
-            context->go_to_offset = true;
-            context->next_param = TOKEN_RECEIVED;
-            break;
-        case TOKEN_RECEIVED:  // path[1] -> contract address of token received
-            copy_address(context->token_received, msg->parameter, sizeof(context->token_received));
+        case ED25519_SIGNATURE:  // _sig
             context->next_param = UNEXPECTED_PARAMETER;
             break;
-        // Keep this
+        case UNEXPECTED_PARAMETER:
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->next_param);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case PROOF:  // _proof
+            context->next_param = LSK_ADDRESS;
+            break;
+        case LSK_ADDRESS:  // _lskAddress
+            copy_parameter(context->lisk.body.claim.lsk_address,
+                           msg->parameter,
+                           sizeof(context->lisk.body.claim.lsk_address));
+            context->next_param = CLAIM_AMOUNT;
+            break;
+        case CLAIM_AMOUNT:  // _amount
+            copy_parameter(context->lisk.body.claim.claim_amount,
+                           msg->parameter,
+                           sizeof(context->lisk.body.claim.claim_amount));
+            context->next_param = MULTISIG_KEYS;
+            break;
+        case MULTISIG_KEYS:  // _keys
+            context->next_param = RECIPIENT;
+            break;
+        case RECIPIENT:  // _recipient
+            copy_address(context->lisk.body.claim.recipient,
+                         msg->parameter,
+                         sizeof(context->lisk.body.claim.recipient));
+            context->next_param = ED25519_SIGNATURES;
+            break;
+        case ED25519_SIGNATURES:  // _sigs
+            context->next_param = UNEXPECTED_PARAMETER;
+            break;
+        case UNEXPECTED_PARAMETER:
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->next_param);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_reward_create_position(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case AMOUNT:  // amount
+            copy_parameter(context->lisk.body.rewardCreatePosition.lock_amount,
+                           msg->parameter,
+                           sizeof(context->lisk.body.rewardCreatePosition.lock_amount));
+            context->next_param = DURATION;
+            break;
+        case DURATION:  // lockingDuration
+            copy_parameter(context->lisk.body.rewardCreatePosition.lock_duration,
+                           msg->parameter,
+                           sizeof(context->lisk.body.rewardCreatePosition.lock_duration));
+            context->next_param = UNEXPECTED_PARAMETER;
+            break;
+        case UNEXPECTED_PARAMETER:
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->next_param);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_lock_ids_array(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case OFFSET:
+            context->next_param = LOCK_IDS_LEN;
+            break;
+        case LOCK_IDS_LEN:
+            if (!U2BE_from_parameter(msg->parameter, &context->lisk.body.reward.lock_ids_len) ||
+                context->lisk.body.reward.lock_ids_len > 4 ||
+                context->lisk.body.reward.lock_ids_len == 0) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+            }
+
+            context->next_param = LOCK_ID;
+            break;
+        case LOCK_ID:
+            copy_parameter(context->lisk.body.reward.lock_id[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            if (counter == context->lisk.body.reward.lock_ids_len - 1) {
+                counter = 0;
+                context->next_param = NONE;
+            } else {
+                counter++;
+            }
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_increase_locking_amount(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case OFFSET:
+            context->next_param = INCREASE_LEN;
+            break;
+        case INCREASE_LEN:
+            if (!U2BE_from_parameter(msg->parameter,
+                                     &context->lisk.body.rewardIncLockingAmount.len) ||
+                context->lisk.body.rewardIncLockingAmount.len > 2 ||
+                context->lisk.body.rewardIncLockingAmount.len == 0) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+            }
+
+            context->next_param = LOCK_ID;
+            break;
+        case LOCK_ID:
+            copy_parameter(context->lisk.body.rewardIncLockingAmount.lock_id[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            context->next_param = AMOUNT;
+            break;
+        case AMOUNT:
+            copy_parameter(context->lisk.body.rewardIncLockingAmount.amount[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            if (context->lisk.body.rewardIncLockingAmount.len > 1 &&
+                counter < context->lisk.body.rewardIncLockingAmount.len - 1) {
+                counter++;
+                context->next_param = LOCK_ID;
+            } else {
+                context->next_param = NONE;
+            }
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_extend_duration(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case OFFSET:
+            context->next_param = INCREASE_LEN;
+            break;
+        case INCREASE_LEN:
+            if (!U2BE_from_parameter(msg->parameter,
+                                     &context->lisk.body.rewardExtendDuration.len) ||
+                context->lisk.body.rewardExtendDuration.len > 2 ||
+                context->lisk.body.rewardExtendDuration.len == 0) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+            }
+
+            context->next_param = LOCK_ID;
+            break;
+        case LOCK_ID:
+            copy_parameter(context->lisk.body.rewardExtendDuration.lock_id[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            context->next_param = DURATION;
+            break;
+        case DURATION:
+            copy_parameter(context->lisk.body.rewardExtendDuration.duration[counter].value,
+                           msg->parameter,
+                           INT256_LENGTH);
+            if (context->lisk.body.rewardExtendDuration.len > 1 &&
+                counter < context->lisk.body.rewardExtendDuration.len - 1) {
+                counter++;
+                context->next_param = LOCK_ID;
+            } else {
+                context->next_param = NONE;
+            }
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_add_unused_rewards(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case AMOUNT:
+            copy_parameter(context->lisk.body.rewardAddUnusedRewards.amount,
+                           msg->parameter,
+                           sizeof(context->lisk.body.rewardAddUnusedRewards.amount));
+            context->next_param = DURATION;
+            break;
+        case DURATION:
+            copy_parameter(context->lisk.body.rewardAddUnusedRewards.duration,
+                           msg->parameter,
+                           sizeof(context->lisk.body.rewardAddUnusedRewards.duration));
+            context->next_param = DELAY;
+            break;
+        case DELAY:
+            copy_parameter(context->lisk.body.rewardAddUnusedRewards.delay,
+                           msg->parameter,
+                           sizeof(context->lisk.body.rewardAddUnusedRewards.delay));
+            context->next_param = UNEXPECTED_PARAMETER;
+            break;
+        case UNEXPECTED_PARAMETER:
+            break;
         default:
             PRINTF("Param not supported: %d\n", context->next_param);
             msg->result = ETH_PLUGIN_RESULT_ERROR;
@@ -55,10 +259,31 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
 
     // EDIT THIS: adapt the cases and the names of the functions.
     switch (context->selectorIndex) {
-        case SWAP_EXACT_ETH_FOR_TOKENS:
-            handle_swap_exact_eth_for_tokens(msg, context);
+        case CLAIM_REGULAR_ACCOUNT:
+            handle_claim_regular_account(msg, context);
             break;
-        case BOILERPLATE_DUMMY_2:
+        case CLAIM_MULTI_SIGNATURE_ACCOUNT:
+            handle_claim_multisig_account(msg, context);
+            break;
+        case REWARD_CREATE_POSITION:
+            handle_reward_create_position(msg, context);
+            break;
+        case REWARD_INIT_FAST_UNLOCK:
+        case REWARD_CLAIM_REWARDS:
+        case REWARD_PAUSE_UNLOCKING:
+        case REWARD_RESUME_UNLOCKING:
+        case REWARD_DELETE_POSITIONS:
+            handle_lock_ids_array(msg, context);
+            break;
+        case REWARD_ADD_UNUSED_REWARDS:
+        case REWARD_FUND_STAKING_REWARDS:
+            handle_add_unused_rewards(msg, context);
+            break;
+        case REWARD_INC_LOCKING_AMOUNT:
+            handle_increase_locking_amount(msg, context);
+            break;
+        case REWARD_EXTEND_DURATION:
+            handle_extend_duration(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

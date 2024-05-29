@@ -15,12 +15,54 @@
 #   limitations under the License.
 # ****************************************************************************
 
-# EDIT THIS: Application name
-APPNAME = "PluginBoilerplate"
+ifeq ($(BOLOS_SDK),)
+$(error Environment variable BOLOS_SDK is not set)
+endif
+
+include $(BOLOS_SDK)/Makefile.defines
+
+ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
+CUSTOM_APP_FLAGS = 0x200
+else
+CUSTOM_APP_FLAGS = 0x000
+endif
+
+# Application name
+APPNAME = "Lisk"
 
 # Application version
 APPVERSION_M = 1
 APPVERSION_N = 0
 APPVERSION_P = 0
 
-include ethereum-plugin-sdk/standard_plugin.mk
+APPVERSION ?= "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
+
+# Application source files
+APP_SOURCE_PATH += src ethereum-plugin-sdk
+
+NORMAL_NAME ?= $(shell echo "$(APPNAME)" | tr " ." "_" | tr "[:upper:]" "[:lower:]")
+ICON_NANOS = icons/nanos_app_$(NORMAL_NAME).gif
+ICON_NANOX = icons/nanox_app_$(NORMAL_NAME).gif
+ICON_NANOSP = $(ICON_NANOX)
+ICON_STAX = icons/stax_app_$(NORMAL_NAME).gif
+
+ifeq ($(TARGET_NAME),TARGET_STAX)
+    DEFINES += ICONGLYPH=C_stax_$(NORMAL_NAME)_64px
+    DEFINES += ICONBITMAP=C_stax_$(NORMAL_NAME)_64px_bitmap
+endif
+
+CURVE_APP_LOAD_PARAMS = secp256k1
+PATH_APP_LOAD_PARAMS = "44'/134'"
+
+VARIANT_PARAM = COIN
+VARIANT_VALUES = lisk
+
+DISABLE_STANDARD_APP_FILES = 1
+DISABLE_STANDARD_SNPRINTF = 1
+DISABLE_STANDARD_USB = 1
+DISABLE_STANDARD_WEBUSB = 1
+DISABLE_STANDARD_BAGL_UX_FLOW = 1
+DISABLE_DEBUG_LEDGER_ASSERT = 1
+DISABLE_DEBUG_THROW = 1
+
+include $(BOLOS_SDK)/Makefile.standard_app
