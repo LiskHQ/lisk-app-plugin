@@ -40,7 +40,9 @@
     X(REWARD_EXTEND_DURATION, 0x2d412a71)        \
     X(REWARD_DELETE_POSITIONS, 0x221b2b41)       \
     X(REWARD_ADD_UNUSED_REWARDS, 0x315d4222)     \
-    X(REWARD_FUND_STAKING_REWARDS, 0xebcb3818)
+    X(REWARD_FUND_STAKING_REWARDS, 0xebcb3818)   \
+    X(REWARD_Extend_Duration, 0x2d412a71)        \
+    X(CLAIM_AIRDROP, 0x0c1646b7)
 
 // Xmacro helpers to define the enum and map
 // Do not modify !

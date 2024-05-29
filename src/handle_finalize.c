@@ -12,6 +12,7 @@ void handle_finalize(ethPluginFinalize_t *msg) {
         case REWARD_FUND_STAKING_REWARDS:
             msg->numScreens = 3;
             break;
+        case CLAIM_AIRDROP:
         case REWARD_CREATE_POSITION:
             msg->numScreens = 2;
             break;

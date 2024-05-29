@@ -245,6 +245,32 @@ static void handle_add_unused_rewards(ethPluginProvideParameter_t *msg, context_
     }
 }
 
+static void handle_claim_airdrop(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch (context->next_param) {
+        case LSK_ADDRESS:  // liskAddress
+            copy_parameter(context->lisk.body.claim.lsk_address,
+                           msg->parameter,
+                           sizeof(context->lisk.body.claim.lsk_address));
+            context->next_param = CLAIM_AMOUNT;
+            break;
+        case CLAIM_AMOUNT:  // amount
+            copy_parameter(context->lisk.body.claim.claim_amount,
+                           msg->parameter,
+                           sizeof(context->lisk.body.claim.claim_amount));
+            context->next_param = PROOF;
+            break;
+        case PROOF:  // merkleProof
+            context->next_param = NONE;
+            break;
+        case NONE:
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->next_param);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
 void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     // We use `%.*H`: it's a utility function to print bytes. You first give
@@ -284,6 +310,9 @@ void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
             break;
         case REWARD_EXTEND_DURATION:
             handle_extend_duration(msg, context);
+            break;
+        case CLAIM_AIRDROP:
+            handle_claim_airdrop(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);
