@@ -54,6 +54,85 @@ static bool set_recipient_ui(ethQueryContractUI_t *msg, context_t *context) {
         chainid);
 }
 
+// Set UI for "Lock Amount" screen.
+static bool set_lock_amount_ui(ethQueryContractUI_t *msg, const context_t *context) {
+    strlcpy(msg->title, "Lock Amount", msg->titleLength);
+
+    uint8_t decimals = 18;
+    const char *ticker = "LSK";
+
+    return amountToString(context->lisk.body.rewardCreatePosition.lock_amount,
+                          sizeof(context->lisk.body.rewardCreatePosition.lock_amount),
+                          decimals,
+                          ticker,
+                          msg->msg,
+                          msg->msgLength);
+}
+
+// Set UI for "Lock Duration" screen.
+static bool set_lock_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Duration (in days)", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.rewardCreatePosition.lock_duration,
+                              sizeof(context->lisk.body.rewardCreatePosition.lock_duration),
+                              msg->msg,
+                              msg->msgLength);
+}
+
+// Set UI for "Lock IDs" screen.
+static bool set_lock_ids_ui(ethQueryContractUI_t *msg, arr_uint8_t *lock) {
+    strlcpy(msg->title, "Lock ID", msg->titleLength);
+    return uint256_to_decimal(lock->value, INT256_LENGTH, msg->msg, msg->msgLength);
+}
+
+// Set UI for "Increase Amount" screen.
+static bool set_amount_ui(ethQueryContractUI_t *msg, arr_uint8_t *amount) {
+    strlcpy(msg->title, "Increase Amount", msg->titleLength);
+
+    uint8_t decimals = 18;
+    const char *ticker = "LSK";
+
+    return amountToString(amount->value, INT256_LENGTH, decimals, ticker, msg->msg, msg->msgLength);
+}
+
+// Set UI for "Extend Duration" screen.
+static bool set_duration_ui(ethQueryContractUI_t *msg, arr_uint8_t *duration) {
+    strlcpy(msg->title, "Duration", msg->titleLength);
+    return uint256_to_decimal(duration->value, INT256_LENGTH, msg->msg, msg->msgLength);
+}
+
+// Set UI for "Unused Rewards Amount" screen.
+static bool set_unused_amount_ui(ethQueryContractUI_t *msg, const context_t *context) {
+    strlcpy(msg->title, "Amount", msg->titleLength);
+
+    uint8_t decimals = 18;
+    const char *ticker = "LSK";
+
+    return amountToString(context->lisk.body.rewardAddUnusedRewards.amount,
+                          sizeof(context->lisk.body.rewardAddUnusedRewards.amount),
+                          decimals,
+                          ticker,
+                          msg->msg,
+                          msg->msgLength);
+}
+
+// Set UI for "Add Unused Duration" screen.
+static bool set_unused_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Duration (in days)", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.rewardAddUnusedRewards.duration,
+                              sizeof(context->lisk.body.rewardAddUnusedRewards.duration),
+                              msg->msg,
+                              msg->msgLength);
+}
+
+// Set UI for "Add Unused Duration" screen.
+static bool set_unused_delay_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Delay (in days)", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.rewardAddUnusedRewards.delay,
+                              sizeof(context->lisk.body.rewardAddUnusedRewards.delay),
+                              msg->msg,
+                              msg->msgLength);
+}
+
 void handle_query_contract_ui(ethQueryContractUI_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     bool ret = false;
@@ -92,6 +171,85 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 2:
                     ret = set_recipient_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_CREATE_POSITION:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_lock_amount_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_lock_duration_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_ADD_UNUSED_REWARDS:
+        case REWARD_FUND_STAKING_REWARDS:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_unused_amount_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_unused_duration_ui(msg, context);
+                    break;
+                case 2:
+                    ret = set_unused_delay_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_INIT_FAST_UNLOCK:
+        case REWARD_CLAIM_REWARDS:
+        case REWARD_PAUSE_UNLOCKING:
+        case REWARD_RESUME_UNLOCKING:
+        case REWARD_DELETE_POSITIONS:
+            if (msg->screenIndex < context->lisk.body.reward.lock_ids_len) {
+                ret = set_lock_ids_ui(msg, &context->lisk.body.reward.lock_id[msg->screenIndex]);
+            } else {
+                PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_INC_LOCKING_AMOUNT:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret =
+                        set_lock_ids_ui(msg, &context->lisk.body.rewardIncLockingAmount.lock_id[0]);
+                    break;
+                case 1:
+                    ret = set_amount_ui(msg, &context->lisk.body.rewardIncLockingAmount.amount[0]);
+                    break;
+                case 2:
+                    ret =
+                        set_lock_ids_ui(msg, &context->lisk.body.rewardIncLockingAmount.lock_id[1]);
+                    break;
+                case 3:
+                    ret = set_amount_ui(msg, &context->lisk.body.rewardIncLockingAmount.amount[1]);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case REWARD_EXTEND_DURATION:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_lock_ids_ui(msg, &context->lisk.body.rewardExtendDuration.lock_id[0]);
+                    break;
+                case 1:
+                    ret =
+                        set_duration_ui(msg, &context->lisk.body.rewardExtendDuration.duration[0]);
+                    break;
+                case 2:
+                    ret = set_lock_ids_ui(msg, &context->lisk.body.rewardExtendDuration.lock_id[1]);
+                    break;
+                case 3:
+                    ret =
+                        set_duration_ui(msg, &context->lisk.body.rewardExtendDuration.duration[1]);
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");

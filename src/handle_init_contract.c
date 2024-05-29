@@ -45,6 +45,20 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
             context->next_param = PROOF;
             break;
+        case REWARD_CREATE_POSITION:
+        case REWARD_ADD_UNUSED_REWARDS:
+        case REWARD_FUND_STAKING_REWARDS:
+            context->next_param = AMOUNT;
+            break;
+        case REWARD_INIT_FAST_UNLOCK:
+        case REWARD_CLAIM_REWARDS:
+        case REWARD_PAUSE_UNLOCKING:
+        case REWARD_RESUME_UNLOCKING:
+        case REWARD_INC_LOCKING_AMOUNT:
+        case REWARD_EXTEND_DURATION:
+        case REWARD_DELETE_POSITIONS:
+            context->next_param = OFFSET;
+            break;
         // Keep this
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);
