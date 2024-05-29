@@ -52,6 +52,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     init_contract.interfaceVersion = ETH_PLUGIN_INTERFACE_VERSION_LATEST;
     init_contract.selector = data;
+    init_contract.pluginSharedRO = &shared_ro;
+    init_contract.pluginSharedRW = &shared_rw;
     init_contract.pluginContext = (uint8_t *) &context;
     init_contract.pluginContextLength = sizeof(context);
 
@@ -66,6 +68,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         provide_param.parameter = data + i;
         provide_param.parameterOffset = i;
         provide_param.pluginContext = (uint8_t *) &context;
+        provide_param.pluginSharedRO = &shared_ro;
+        provide_param.pluginSharedRW = &shared_rw;
         handle_provide_parameter(&provide_param);
         if (provide_param.result != ETH_PLUGIN_RESULT_OK) {
             return 0;
@@ -75,38 +79,46 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     finalize.pluginContext = (uint8_t *) &context;
     finalize.address = address;
+    finalize.pluginSharedRO = &shared_ro;
+    finalize.pluginSharedRW = &shared_rw;
     handle_finalize(&finalize);
     if (finalize.result != ETH_PLUGIN_RESULT_OK) {
         return 0;
     }
 
-    provide_info.pluginContext = (uint8_t *) &context;
-    if (finalize.tokenLookup1) {
-        if (size - i >= sizeof(extraInfo_t)) {
-            provide_info.item1 = &item1;
+    if (finalize.tokenLookup1 || finalize.tokenLookup2) {
+        provide_info.pluginContext = (uint8_t *) &context;
+        provide_info.pluginSharedRO = &shared_ro;
+        provide_info.pluginSharedRW = &shared_rw;
+        if (finalize.tokenLookup1) {
+            if (size - i >= sizeof(extraInfo_t)) {
+                provide_info.item1 = &item1;
 
-            memcpy(provide_info.item1, data + i, sizeof(extraInfo_t));
-            provide_info.item1->token.ticker[MAX_TICKER_LEN - 1] = '\0';
-            i += sizeof(extraInfo_t);
+                memcpy(provide_info.item1, data + i, sizeof(extraInfo_t));
+                provide_info.item1->token.ticker[MAX_TICKER_LEN - 1] = '\0';
+                i += sizeof(extraInfo_t);
+            }
         }
-    }
 
-    if (finalize.tokenLookup2) {
-        if (size - i >= sizeof(extraInfo_t)) {
-            provide_info.item2 = &item2;
+        if (finalize.tokenLookup2) {
+            if (size - i >= sizeof(extraInfo_t)) {
+                provide_info.item2 = &item2;
 
-            memcpy(provide_info.item2, data + i, sizeof(extraInfo_t));
-            provide_info.item2->token.ticker[MAX_TICKER_LEN - 1] = '\0';
-            i += sizeof(extraInfo_t);
+                memcpy(provide_info.item2, data + i, sizeof(extraInfo_t));
+                provide_info.item2->token.ticker[MAX_TICKER_LEN - 1] = '\0';
+                i += sizeof(extraInfo_t);
+            }
         }
-    }
 
-    handle_provide_token(&provide_info);
-    if (provide_info.result != ETH_PLUGIN_RESULT_OK) {
-        return 0;
+        handle_provide_token(&provide_info);
+        if (provide_info.result != ETH_PLUGIN_RESULT_OK) {
+            return 0;
+        }
     }
 
     query_id.pluginContext = (uint8_t *) &context;
+    query_id.pluginSharedRO = &shared_ro;
+    query_id.pluginSharedRW = &shared_rw;
     query_id.name = name;
     query_id.nameLength = sizeof(name);
     query_id.version = version;

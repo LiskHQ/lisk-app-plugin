@@ -73,6 +73,7 @@ add_compile_definitions(
 
 include_directories(
     ${BOLOS_SDK}/include
+    ${BOLOS_SDK}/lib_standard_app
     ${BOLOS_SDK}/lib_cxng/include
     ${BOLOS_SDK}/lib_cxng/src
     ${BOLOS_SDK}/target/nanox/include
@@ -80,24 +81,27 @@ include_directories(
     ${SRC_DIR}
 )
 
+# Take all source files from the application and the sdk
+file(GLOB_RECURSE APPLICATION_SRC
+    # Take all plugin sources
+    ${SRC_DIR}/*.c
+
+    # Take all sdk sources
+    ${ETH_DIR}/src/*.c
+)
+# Filter out main.c from the SDK, the fuzzing has its own main
+list(FILTER APPLICATION_SRC EXCLUDE REGEX "${ETH_DIR}/src/main")
+
 add_executable(fuzz
+    ${APPLICATION_SRC}
+
+    # fuzzing specific files
     fuzz_plugin.c
     mocks.c
 
-    ${SRC_DIR}/plugin.c
-    ${SRC_DIR}/handle_init_contract.c
-    ${SRC_DIR}/handle_provide_parameter.c
-    ${SRC_DIR}/handle_finalize.c
-    ${SRC_DIR}/handle_provide_token.c
-    ${SRC_DIR}/handle_query_contract_ui.c
-    ${SRC_DIR}/handle_query_contract_id.c
-
-    # Ethereum SDK
-    ${ETH_DIR}/src/common_utils.c
-    ${ETH_DIR}/src/plugin_utils.c
-
     # sdk utils
     ${BOLOS_SDK}/src/ledger_assert.c
+    ${BOLOS_SDK}/lib_standard_app/format.c
 
     # cxng
     ${BOLOS_SDK}/lib_cxng/src/cx_hash.c

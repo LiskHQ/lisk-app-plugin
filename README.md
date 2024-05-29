@@ -10,7 +10,7 @@
 Lisk App Plugin is a plugin for the Ethereum application specific to support lisk smart contracts. It helps parsing and displaying relevant information when signing transaction.
 
 Plugins are lightweight applications that go hand-in-hand with the Ethereum
-Application on a Nano (S, S plus, X) and Stax devices.
+Application on a Nano (S, S plus, X), Stax and Flex devices.
 
 They allow users to safely interact with smart contracts by parsing the
 transaction data and displaying its content in a human-readable way. This is

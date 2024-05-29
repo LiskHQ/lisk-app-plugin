@@ -1,5 +1,25 @@
 #include "plugin.h"
 
+static bool set_bytes_to_hex(char *msg, size_t msgLen, const uint8_t *value, uint16_t valueLen) {
+    if (value == NULL || msg == NULL || (valueLen * 2U) + 1U > msgLen) {
+        return false;
+    }
+
+    const char *const HEX_DIGITS = "0123456789abcdef";
+
+    size_t len = valueLen;
+
+    do {
+        *msg++ = HEX_DIGITS[(*value >> 4U) & 0xF];
+        *msg++ = HEX_DIGITS[*value & 0xF];
+        ++value;
+    } while (len-- > 1U);
+
+    *msg = '\0';
+
+    return true;
+}
+
 // Set UI for "Claim LSK" screen.
 static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
     strlcpy(msg->title, "Claim LSK", msg->titleLength);
@@ -18,7 +38,10 @@ static bool set_claim_ui(ethQueryContractUI_t *msg, const context_t *context) {
 // Set UI for "Sender Public Key" screen.
 static bool set_sender_public_key_ui(ethQueryContractUI_t *msg, context_t *context) {
     strlcpy(msg->title, "Sender Lisk Public Key", msg->titleLength);
-    array_hexstr(msg->msg, context->lisk.body.claim.public_key, PUBLIC_KEY_LENGTH);
+    set_bytes_to_hex(msg->msg,
+                     msg->msgLength,
+                     context->lisk.body.claim.public_key,
+                     sizeof(context->lisk.body.claim.public_key));
     return true;
 }
 
@@ -30,7 +53,10 @@ static bool set_sender_address_ui(ethQueryContractUI_t *msg, context_t *context)
     msg->msg[0] = '0';
     msg->msg[1] = 'x';
 
-    array_hexstr(msg->msg + 2, context->lisk.body.claim.lsk_address, LISK_ADDRESS_LENGTH);
+    set_bytes_to_hex(msg->msg + 2,
+                     msg->msgLength,
+                     context->lisk.body.claim.lsk_address,
+                     sizeof(context->lisk.body.claim.lsk_address));
     return true;
 }
 

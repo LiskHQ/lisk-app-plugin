@@ -23,6 +23,7 @@ Example of the correct file tree with Ethereum compiled for all targets.
 * `tests/.test_dependencies/ethereum/build/nanos2/bin/app.elf`
 * `tests/.test_dependencies/ethereum/build/nanox/bin/app.elf`
 * `tests/.test_dependencies/ethereum/build/stax/bin/app.elf`
+* `tests/.test_dependencies/ethereum/build/flex/bin/app.elf`
 
 The first method is to use the Ledger VSCode extension to automatically manage dependencies
 The second method is to go in the Ethereum project, compile the application, and dispatch the `build/` output directory.
