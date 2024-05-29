@@ -28,9 +28,19 @@
 // A Xmacro below will create for you:
 //     - an enum named selector_t with every NAME
 //     - a map named SELECTORS associating each NAME with it's value
-#define SELECTORS_LIST(X)                \
-    X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d) \
-    X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68)
+#define SELECTORS_LIST(X)                        \
+    X(CLAIM_REGULAR_ACCOUNT, 0xf6de242d)         \
+    X(CLAIM_MULTI_SIGNATURE_ACCOUNT, 0x2f559f68) \
+    X(REWARD_CREATE_POSITION, 0xd1aaef05)        \
+    X(REWARD_INIT_FAST_UNLOCK, 0x864c8725)       \
+    X(REWARD_CLAIM_REWARDS, 0x5eac6239)          \
+    X(REWARD_RESUME_UNLOCKING, 0x82d4ae58)       \
+    X(REWARD_PAUSE_UNLOCKING, 0xfe042b5b)        \
+    X(REWARD_INC_LOCKING_AMOUNT, 0xf94415ca)     \
+    X(REWARD_EXTEND_DURATION, 0x2d412a71)        \
+    X(REWARD_DELETE_POSITIONS, 0x221b2b41)       \
+    X(REWARD_ADD_UNUSED_REWARDS, 0x315d4222)     \
+    X(REWARD_FUND_STAKING_REWARDS, 0xebcb3818)
 
 // Xmacro helpers to define the enum and map
 // Do not modify !
@@ -44,6 +54,10 @@ typedef enum selector_e {
     SELECTORS_LIST(TO_ENUM) SELECTOR_COUNT,
 } selector_t;
 
+typedef struct {
+    uint8_t value[INT256_LENGTH];
+} arr_uint8_t;
+
 // This array will be automatically expanded to map all selector_t names with the correct value.
 // Do not modify !
 extern const uint32_t SELECTORS[SELECTOR_COUNT];
@@ -56,6 +70,7 @@ typedef enum {
     CLAIM_AMOUNT,
     RECIPIENT,
     UNEXPECTED_PARAMETER,
+    NONE,
 
     // Claim regular account parameters
     PUBLIC_KEY,
@@ -65,6 +80,16 @@ typedef enum {
     MULTISIG_KEYS,
     LSK_ADDRESS,
     ED25519_SIGNATURES,
+
+    // Reward contract parameters
+    AMOUNT,
+    DURATION,
+    LOCK_ID,
+    LOCK_IDS_LEN,
+    LOCK_ID_NEXT,
+    INCREASE_LEN,
+    OFFSET,
+    DELAY,
 } parameter;
 
 typedef struct {
@@ -75,6 +100,31 @@ typedef struct {
             uint8_t public_key[PUBLIC_KEY_LENGTH];
             uint8_t lsk_address[LISK_ADDRESS_LENGTH];
         } claim;
+
+        struct {
+            uint8_t lock_amount[INT256_LENGTH];
+            uint8_t lock_duration[INT256_LENGTH];
+        } rewardCreatePosition;
+
+        struct {
+            uint16_t lock_ids_len;
+            arr_uint8_t lock_id[4];
+        } reward;
+        struct {
+            arr_uint8_t lock_id[2];
+            arr_uint8_t amount[2];
+            uint16_t len;
+        } rewardIncLockingAmount;
+        struct {
+            arr_uint8_t lock_id[2];
+            arr_uint8_t duration[2];
+            uint16_t len;
+        } rewardExtendDuration;
+        struct {
+            uint8_t amount[INT256_LENGTH];
+            uint8_t duration[INT256_LENGTH];
+            uint8_t delay[INT256_LENGTH];
+        } rewardAddUnusedRewards;
     } body;
 } lisk_t;
 

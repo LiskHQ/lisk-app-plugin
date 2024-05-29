@@ -14,6 +14,36 @@ void handle_query_contract_id(ethQueryContractID_t *msg) {
         context->selectorIndex == CLAIM_MULTI_SIGNATURE_ACCOUNT) {
         strlcpy(msg->version, "Claim LSK", msg->versionLength);
         msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_CREATE_POSITION) {
+        strlcpy(msg->version, "Stake Amount", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_INIT_FAST_UNLOCK) {
+        strlcpy(msg->version, "Fast Unlock", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_CLAIM_REWARDS) {
+        strlcpy(msg->version, "Claim Rewards", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_PAUSE_UNLOCKING) {
+        strlcpy(msg->version, "Pause Unlocking", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_RESUME_UNLOCKING) {
+        strlcpy(msg->version, "Resume Unlocking", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_INC_LOCKING_AMOUNT) {
+        strlcpy(msg->version, "Inc Locking Amount", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_EXTEND_DURATION) {
+        strlcpy(msg->version, "Extend Duration", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_DELETE_POSITIONS) {
+        strlcpy(msg->version, "Delete Positions", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_ADD_UNUSED_REWARDS) {
+        strlcpy(msg->version, "Add Unused Rewards", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
+    } else if (context->selectorIndex == REWARD_FUND_STAKING_REWARDS) {
+        strlcpy(msg->version, "Fund Staking Rewards", msg->versionLength);
+        msg->result = ETH_PLUGIN_RESULT_OK;
     } else {
         PRINTF("Selector index: %d not supported\n", context->selectorIndex);
         msg->result = ETH_PLUGIN_RESULT_ERROR;
