@@ -4,10 +4,12 @@
 
 Smart contracts covered by this plugin are:
 
-| Network              | Version | Smart Contract | Address                                        |
-| -------------------- | ------- | -------------- | ---------------------------------------------- |
-| Lisk Sepolia Testnet | -       | TokenClaim     | `0x4bf6F67f7B1EF8C7a6C9C7a202C8b6838a3490e4`   |
-| Lisk Sepolia Testnet | -       | Reward         | `0x0xfB072D568840BC67846B24d64D66095C1f932F99` |
+| Network              | Version | Smart Contract | Address                                      |
+| -------------------- | ------- | -------------- | -------------------------------------------- |
+| Lisk Sepolia Testnet | -       | TokenClaim     | `0x3D4190b08E3E30183f5AdE3A116f2534Ee3a4f94` |
+| Lisk Sepolia Testnet | -       | Reward         | `0xFd322B4724C497E59D48fff8f79c16b4D48837f5` |
+| Lisk Mainnet         | -       | TokenClaim     | `0xD7BE2Fd98BfD64c1dfCf6c013fC593eF09219994` |
+| Lisk Mainnet         | -       | Reward         | `0xD35ca9577a9DADa7624a35EC10C2F55031f0Ab1f` |
 
 ## Functions
 
