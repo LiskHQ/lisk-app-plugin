@@ -72,7 +72,7 @@ static bool set_recipient_ui(ethQueryContractUI_t *msg, context_t *context) {
     // Setting it to `0` will make it work with every chainID :)
     uint64_t chainid = 0;
 
-    // Get the string representation of the address stored in `context->beneficiary`. xx^Put it in
+    // Get the string representation of the address stored in `context->beneficiary`. Put it in
     // `msg->msg`.
     return getEthAddressStringFromBinary(
         context->lisk.body.claim.recipient,
