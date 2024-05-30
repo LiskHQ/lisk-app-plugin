@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "plugin.h"
 
 static bool set_bytes_to_hex(char *msg, size_t msgLen, const uint8_t *value, uint16_t valueLen) {
@@ -167,6 +168,54 @@ static bool set_unused_delay_ui(ethQueryContractUI_t *msg, context_t *context) {
                               msg->msgLength);
 }
 
+// Set UI for "Proposal ID" screen.
+static bool set_proposal_id_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Proposal ID", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.governor.proposal_id,
+                              INT256_LENGTH,
+                              msg->msg,
+                              msg->msgLength);
+}
+
+// Set UI for "Support" screen.
+static bool set_support_ui(ethQueryContractUI_t *msg, context_t *context) {
+    strlcpy(msg->title, "Support", msg->titleLength);
+    return uint256_to_decimal(context->lisk.body.governor.support,
+                              sizeof(context->lisk.body.governor.support),
+                              msg->msg,
+                              msg->msgLength);
+}
+
+static bool set_reason_ui(ethQueryContractUI_t *msg, string_uint8_t *reason) {
+    strlcpy(msg->title, "Reason", msg->titleLength);
+    snprintf(msg->msg, msg->msgLength, "%s", reason->value);
+    return true;
+}
+
+// Set UI for "Target Address" screen.
+static bool set_target_ui(ethQueryContractUI_t *msg, arr_address_t *target) {
+    strlcpy(msg->title, "Target Address", msg->titleLength);
+
+    // Prefix the address with `0x`.
+    msg->msg[0] = '0';
+    msg->msg[1] = 'x';
+
+    // We need a random chainID for legacy reasons with `getEthAddressStringFromBinary`.
+    // Setting it to `0` will make it work with every chainID :)
+    uint64_t chainid = 0;
+
+    return getEthAddressStringFromBinary(
+        target->value,
+        msg->msg + 2,  // +2 here because we've already prefixed with '0x'.
+        chainid);
+}
+
+// Set UI for "Value" screen.
+static bool set_value_ui(ethQueryContractUI_t *msg, arr_uint8_t *value) {
+    strlcpy(msg->title, "Value", msg->titleLength);
+    return uint256_to_decimal(value->value, INT256_LENGTH, msg->msg, msg->msgLength);
+}
+
 void handle_query_contract_ui(ethQueryContractUI_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     bool ret = false;
@@ -296,6 +345,51 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 1:
                     ret = set_claim_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case GOVERNOR_CAST_VOTE:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_proposal_id_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_support_ui(msg, context);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case GOVERNOR_CAST_VOTE_WITH_REASON:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_proposal_id_ui(msg, context);
+                    break;
+                case 1:
+                    ret = set_support_ui(msg, context);
+                    break;
+                case 2:
+                    ret = set_reason_ui(msg, &context->lisk.body.governor.reason);
+                    break;
+                default:
+                    PRINTF("Received an invalid screenIndex\n");
+            }
+            break;
+        case GOVERNOR_PROPOSE:
+            switch (msg->screenIndex) {
+                case 0:
+                    ret = set_target_ui(msg, &context->lisk.body.governorPropose.targets[0]);
+                    break;
+                case 1:
+                    ret = set_value_ui(msg, &context->lisk.body.governorPropose.values[0]);
+                    break;
+                case 2:
+                    ret = set_target_ui(msg, &context->lisk.body.governorPropose.targets[1]);
+                    break;
+                case 3:
+                    ret = set_value_ui(msg, &context->lisk.body.governorPropose.values[1]);
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
