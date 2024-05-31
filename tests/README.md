@@ -1,15 +1,10 @@
 # Tests
 
-This directory contains non-regression tests for the Boilerplate plugin.
+This directory contains non-regression tests for the Lisk App Plugin.
 The tests craft APDUs, send them to the application, and assert the RAPDUs results and the screen content.
-You will need to adapt / enrich the test database with tests relevant to your plugin.
-The presence of functional testing of your plugin and an associated CI is mandatory.
 
 The [Speculos](https://github.com/LedgerHQ/speculos) tool is used to emulate the device and its applications.
 The [Ragger](https://github.com/LedgerHQ/ragger) test framework (pytest based) is used to manage the Speculos instance and provide useful helper functions (APDU exchanges, screen navigation, etc).
-Both framework are developed by Ledger, if you have trouble using them, we invite you to get in touch with us on our [Discord](https://developers.ledger.com/contact/).
-For this reason, the usage of the Ragger framework for your tests is greatly recommended.
-
 
 ## Binaries
 
@@ -28,12 +23,10 @@ Example of the correct file tree with Ethereum compiled for all targets.
 The first method is to use the Ledger VSCode extension to automatically manage dependencies
 The second method is to go in the Ethereum project, compile the application, and dispatch the `build/` output directory.
 A third method is to re-use the Ethereum build used in the CI, and available as artifact. 
-For example in the [plugin-boilerplate CI](https://github.com/LedgerHQ/app-plugin-boilerplate/actions/workflows/build_and_functional_tests.yml).
-
 
 ## Launching the tests
 
-The plugin boilerplate app comes with functional tests 
+The Lisk App Plugin comes with functional tests 
 
 
 ### macOS / Windows

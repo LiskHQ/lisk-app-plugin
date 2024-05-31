@@ -13,7 +13,7 @@ Smart contracts covered by this plugin are:
 | Lisk Mainnet         | -       | TokenClaim     | `0xD7BE2Fd98BfD64c1dfCf6c013fC593eF09219994`     |
 | Lisk Mainnet         | -       | Reward         | `0xD35ca9577a9DADa7624a35EC10C2F55031f0Ab1f`     |
 | Lisk Mainnet         | -       | Airdrop        | `TODO`                                           |
-| Lisk Mainnet         | -       | Governor       | `0x58a61b1807a7bDA541855DaAEAEe89b1DDA48568TODO` |
+| Lisk Mainnet         | -       | Governor       | `0x58a61b1807a7bDA541855DaAEAEe89b1DDA48568` |
 
 
 ## Functions
