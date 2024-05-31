@@ -96,8 +96,8 @@ static bool set_lock_amount_ui(ethQueryContractUI_t *msg, const context_t *conte
     uint8_t decimals = 18;
     const char *ticker = "LSK";
 
-    return amountToString(context->lisk.body.rewardCreatePosition.lock_amount,
-                          sizeof(context->lisk.body.rewardCreatePosition.lock_amount),
+    return amountToString(context->lisk.body.rewardCreatePosition.first,
+                          sizeof(context->lisk.body.rewardCreatePosition.first),
                           decimals,
                           ticker,
                           msg->msg,
@@ -107,8 +107,8 @@ static bool set_lock_amount_ui(ethQueryContractUI_t *msg, const context_t *conte
 // Set UI for "Lock Duration" screen.
 static bool set_lock_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
     strlcpy(msg->title, "Duration (in days)", msg->titleLength);
-    return uint256_to_decimal(context->lisk.body.rewardCreatePosition.lock_duration,
-                              sizeof(context->lisk.body.rewardCreatePosition.lock_duration),
+    return uint256_to_decimal(context->lisk.body.rewardCreatePosition.secound,
+                              sizeof(context->lisk.body.rewardCreatePosition.secound),
                               msg->msg,
                               msg->msgLength);
 }
@@ -142,8 +142,8 @@ static bool set_unused_amount_ui(ethQueryContractUI_t *msg, const context_t *con
     uint8_t decimals = 18;
     const char *ticker = "LSK";
 
-    return amountToString(context->lisk.body.rewardAddUnusedRewards.amount,
-                          sizeof(context->lisk.body.rewardAddUnusedRewards.amount),
+    return amountToString(context->lisk.body.rewardAddUnusedRewards.data.first,
+                          sizeof(context->lisk.body.rewardAddUnusedRewards.data.first),
                           decimals,
                           ticker,
                           msg->msg,
@@ -153,8 +153,8 @@ static bool set_unused_amount_ui(ethQueryContractUI_t *msg, const context_t *con
 // Set UI for "Add Unused Duration" screen.
 static bool set_unused_duration_ui(ethQueryContractUI_t *msg, context_t *context) {
     strlcpy(msg->title, "Duration (in days)", msg->titleLength);
-    return uint256_to_decimal(context->lisk.body.rewardAddUnusedRewards.duration,
-                              sizeof(context->lisk.body.rewardAddUnusedRewards.duration),
+    return uint256_to_decimal(context->lisk.body.rewardAddUnusedRewards.data.secound,
+                              sizeof(context->lisk.body.rewardAddUnusedRewards.data.secound),
                               msg->msg,
                               msg->msgLength);
 }
@@ -171,8 +171,8 @@ static bool set_unused_delay_ui(ethQueryContractUI_t *msg, context_t *context) {
 // Set UI for "Proposal ID" screen.
 static bool set_proposal_id_ui(ethQueryContractUI_t *msg, context_t *context) {
     strlcpy(msg->title, "Proposal ID", msg->titleLength);
-    return uint256_to_decimal(context->lisk.body.governor.proposal_id,
-                              INT256_LENGTH,
+    return uint256_to_decimal(context->lisk.body.governor.data.first,
+                              sizeof(context->lisk.body.governor.data.first),
                               msg->msg,
                               msg->msgLength);
 }
@@ -180,8 +180,8 @@ static bool set_proposal_id_ui(ethQueryContractUI_t *msg, context_t *context) {
 // Set UI for "Support" screen.
 static bool set_support_ui(ethQueryContractUI_t *msg, context_t *context) {
     strlcpy(msg->title, "Support", msg->titleLength);
-    return uint256_to_decimal(context->lisk.body.governor.support,
-                              sizeof(context->lisk.body.governor.support),
+    return uint256_to_decimal(context->lisk.body.governor.data.secound,
+                              sizeof(context->lisk.body.governor.data.secound),
                               msg->msg,
                               msg->msgLength);
 }
@@ -302,17 +302,17 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
             switch (msg->screenIndex) {
                 case 0:
                     ret =
-                        set_lock_ids_ui(msg, &context->lisk.body.rewardIncLockingAmount.lock_id[0]);
+                        set_lock_ids_ui(msg, &context->lisk.body.rewardIncLockingAmount.first[0]);
                     break;
                 case 1:
-                    ret = set_amount_ui(msg, &context->lisk.body.rewardIncLockingAmount.amount[0]);
+                    ret = set_amount_ui(msg, &context->lisk.body.rewardIncLockingAmount.secound[0]);
                     break;
                 case 2:
                     ret =
-                        set_lock_ids_ui(msg, &context->lisk.body.rewardIncLockingAmount.lock_id[1]);
+                        set_lock_ids_ui(msg, &context->lisk.body.rewardIncLockingAmount.first[1]);
                     break;
                 case 3:
-                    ret = set_amount_ui(msg, &context->lisk.body.rewardIncLockingAmount.amount[1]);
+                    ret = set_amount_ui(msg, &context->lisk.body.rewardIncLockingAmount.secound[1]);
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
@@ -321,18 +321,18 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case REWARD_EXTEND_DURATION:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_lock_ids_ui(msg, &context->lisk.body.rewardExtendDuration.lock_id[0]);
+                    ret = set_lock_ids_ui(msg, &context->lisk.body.rewardExtendDuration.first[0]);
                     break;
                 case 1:
                     ret =
-                        set_duration_ui(msg, &context->lisk.body.rewardExtendDuration.duration[0]);
+                        set_duration_ui(msg, &context->lisk.body.rewardExtendDuration.secound[0]);
                     break;
                 case 2:
-                    ret = set_lock_ids_ui(msg, &context->lisk.body.rewardExtendDuration.lock_id[1]);
+                    ret = set_lock_ids_ui(msg, &context->lisk.body.rewardExtendDuration.first[1]);
                     break;
                 case 3:
                     ret =
-                        set_duration_ui(msg, &context->lisk.body.rewardExtendDuration.duration[1]);
+                        set_duration_ui(msg, &context->lisk.body.rewardExtendDuration.secound[1]);
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
@@ -380,16 +380,16 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case GOVERNOR_PROPOSE:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_target_ui(msg, &context->lisk.body.governorPropose.targets[0]);
+                    ret = set_target_ui(msg, &context->lisk.body.governorPropose.first[0]);
                     break;
                 case 1:
-                    ret = set_value_ui(msg, &context->lisk.body.governorPropose.values[0]);
+                    ret = set_value_ui(msg, &context->lisk.body.governorPropose.secound[0]);
                     break;
                 case 2:
-                    ret = set_target_ui(msg, &context->lisk.body.governorPropose.targets[1]);
+                    ret = set_target_ui(msg, &context->lisk.body.governorPropose.first[1]);
                     break;
                 case 3:
-                    ret = set_value_ui(msg, &context->lisk.body.governorPropose.values[1]);
+                    ret = set_value_ui(msg, &context->lisk.body.governorPropose.secound[1]);
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");

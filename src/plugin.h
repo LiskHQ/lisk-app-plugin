@@ -72,6 +72,17 @@ typedef struct {
     uint8_t value[PARAMETER_LENGTH];
 } string_uint8_t;
 
+typedef struct {
+    arr_uint8_t first[2];
+    arr_uint8_t secound[2];
+    uint16_t len;
+} double_arr_with_len_t;
+
+typedef struct {
+    uint8_t first[INT256_LENGTH];
+    uint8_t secound[INT256_LENGTH];
+} tuple_t;
+
 // This array will be automatically expanded to map all selector_t names with the correct value.
 // Do not modify !
 extern const uint32_t SELECTORS[SELECTOR_COUNT];
@@ -119,42 +130,23 @@ typedef struct {
             uint8_t lsk_address[LISK_ADDRESS_LENGTH];
         } claim;
 
-        struct {
-            uint8_t lock_amount[INT256_LENGTH];
-            uint8_t lock_duration[INT256_LENGTH];
-        } rewardCreatePosition;
-
+        tuple_t rewardCreatePosition;
         struct {
             uint16_t lock_ids_len;
             arr_uint8_t lock_id[4];
         } reward;
+        double_arr_with_len_t rewardIncLockingAmount;
+        double_arr_with_len_t rewardExtendDuration;
         struct {
-            arr_uint8_t lock_id[2];
-            arr_uint8_t amount[2];
-            uint16_t len;
-        } rewardIncLockingAmount;
-        struct {
-            arr_uint8_t lock_id[2];
-            arr_uint8_t duration[2];
-            uint16_t len;
-        } rewardExtendDuration;
-        struct {
-            uint8_t amount[INT256_LENGTH];
-            uint8_t duration[INT256_LENGTH];
+            tuple_t data;
             uint8_t delay[INT256_LENGTH];
         } rewardAddUnusedRewards;
 
         struct {
-            uint8_t proposal_id[INT256_LENGTH];
-            uint8_t support[INT256_LENGTH];
+            tuple_t data;
             string_uint8_t reason;
         } governor;
-        struct {
-            uint16_t target_len;
-            uint16_t value_len;
-            arr_address_t targets[2];
-            arr_uint8_t values[2];
-        } governorPropose;
+        double_arr_with_len_t governorPropose;
 
     } body;
 } lisk_t;
