@@ -67,6 +67,11 @@ typedef struct {
     uint8_t value[ADDRESS_LENGTH];
 } arr_address_t;
 
+typedef struct {
+    uint8_t len;
+    uint8_t value[PARAMETER_LENGTH];
+} string_uint8_t;
+
 // This array will be automatically expanded to map all selector_t names with the correct value.
 // Do not modify !
 extern const uint32_t SELECTORS[SELECTOR_COUNT];
@@ -75,48 +80,35 @@ extern const uint32_t SELECTORS[SELECTOR_COUNT];
 // EDIT THIS: Adapt the parameter names here.
 typedef enum {
     // Common parameters
+    AMOUNT,
     PROOF,
-    CLAIM_AMOUNT,
+    ID,
+    LENGTH,
+    LSK_ADDRESS,
+    OFFSET,
     RECIPIENT,
+    SKIPED_PARAMETER,
     UNEXPECTED_PARAMETER,
     NONE,
 
     // Claim regular account parameters
     PUBLIC_KEY,
-    ED25519_SIGNATURE,
 
     // Claim multi-sig account parameters
     MULTISIG_KEYS,
-    LSK_ADDRESS,
-    ED25519_SIGNATURES,
 
     // Reward contract parameters
-    AMOUNT,
-    DURATION,
-    LOCK_ID,
-    LOCK_IDS_LEN,
-    LOCK_ID_NEXT,
-    INCREASE_LEN,
-    OFFSET,
     DELAY,
+    DURATION,
 
     // Governor contract parameters
-    PROPOSAL_ID,
-    SUPPORT,
-    REASON,
-    REASON_LENGTH,
-    PROPOSE_TARGET_LEN,
     PROPOSE_VALUE_LEN,
-    TARGET_ADDRESS,
     SECOND_TARGET_ADDRESS,
-    VALUE,
     SECOND_VALUE,
+    SUPPORT,
+    TARGET_ADDRESS,
+    VALUE,
 } parameter;
-
-typedef struct {
-    uint8_t len;
-    uint8_t value[PARAMETER_LENGTH];
-} string_uint8_t;
 
 typedef struct {
     union {

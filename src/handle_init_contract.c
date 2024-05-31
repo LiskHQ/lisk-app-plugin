@@ -65,7 +65,7 @@ void handle_init_contract(ethPluginInitContract_t *msg) {
             break;
         case GOVERNOR_CAST_VOTE:
         case GOVERNOR_CAST_VOTE_WITH_REASON:
-            context->next_param = PROPOSAL_ID;
+            context->next_param = ID;
             break;
         // Keep this
         default:
