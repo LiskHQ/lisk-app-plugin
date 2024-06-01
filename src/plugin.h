@@ -146,7 +146,10 @@ typedef struct {
             tuple_t data;
             string_uint8_t reason;
         } governor;
-        double_arr_with_len_t governorPropose;
+        struct {
+            double_arr_with_len_t data;
+            uint16_t value_len;
+        } governorPropose;
 
     } body;
 } lisk_t;

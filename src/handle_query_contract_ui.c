@@ -22,22 +22,21 @@ static bool set_bytes_to_hex(char *msg, size_t msgLen, const uint8_t *value, uin
 }
 
 // Set UI with custom title for amount screen with uint8 data.
-static bool set_amount_ui_uint8(ethQueryContractUI_t *msg, const uint8_t *amount, const char *title) {
+static bool set_amount_ui_uint8(ethQueryContractUI_t *msg,
+                                const uint8_t *amount,
+                                const char *title) {
     strlcpy(msg->title, title, msg->titleLength);
 
     uint8_t decimals = 18;
     const char *ticker = "LSK";
 
-    return amountToString(amount,
-                          INT256_LENGTH,
-                          decimals,
-                          ticker,
-                          msg->msg,
-                          msg->msgLength);
+    return amountToString(amount, INT256_LENGTH, decimals, ticker, msg->msg, msg->msgLength);
 }
 
 // Set UI with custom title for amount screen with uint8 data.
-static bool set_amount_ui_arr(ethQueryContractUI_t *msg, const arr_uint8_t *amount, const char *title) {
+static bool set_amount_ui_arr(ethQueryContractUI_t *msg,
+                              const arr_uint8_t *amount,
+                              const char *title) {
     return set_amount_ui_uint8(msg, amount->value, title);
 }
 
@@ -51,8 +50,8 @@ static bool set_sender_public_key_ui(ethQueryContractUI_t *msg, context_t *conte
     return true;
 }
 
-// Set UI for "Sender Address" screen.
-static bool set_sender_address_ui(ethQueryContractUI_t *msg, context_t *context) {
+// Set UI for "Lisk Address" screen.
+static bool set_lisk_address_ui(ethQueryContractUI_t *msg, context_t *context) {
     if (context->selectorIndex == CLAIM_AIRDROP) {
         strlcpy(msg->title, "Lisk Address", msg->titleLength);
     } else {
@@ -78,16 +77,19 @@ static bool set_reason_ui(ethQueryContractUI_t *msg, string_uint8_t *reason) {
 }
 
 // Set UI with custom title for decimal screan with uint8 data
-static bool set_decimal_ui_uint8(ethQueryContractUI_t *msg, const uint8_t *value, const char *title) {
+static bool set_decimal_ui_uint8(ethQueryContractUI_t *msg,
+                                 const uint8_t *value,
+                                 const char *title) {
     strlcpy(msg->title, title, msg->titleLength);
     return uint256_to_decimal(value, INT256_LENGTH, msg->msg, msg->msgLength);
 }
 
 // Set UI with custom title for "decimal" screen with array of uint8 data.
-static bool set_decimal_ui_arr(ethQueryContractUI_t *msg, const arr_uint8_t *arr, const char *title) {
+static bool set_decimal_ui_arr(ethQueryContractUI_t *msg,
+                               const arr_uint8_t *arr,
+                               const char *title) {
     return set_decimal_ui_uint8(msg, arr->value, title);
 }
-
 
 // Set UI with custom title for address Screen.
 static bool set_address_ui(ethQueryContractUI_t *msg, uint8_t *address, const char *title) {
@@ -123,13 +125,17 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case CLAIM_REGULAR_ACCOUNT:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_amount_ui_uint8(msg, context->lisk.body.claim.claim_amount, "Claim LSK");
+                    ret = set_amount_ui_uint8(msg,
+                                              context->lisk.body.claim.claim_amount,
+                                              "Claim LSK");
                     break;
                 case 1:
                     ret = set_sender_public_key_ui(msg, context);
                     break;
                 case 2:
-                    ret = set_address_ui(msg, context->lisk.body.claim.recipient, "Recipient Address L2");
+                    ret = set_address_ui(msg,
+                                         context->lisk.body.claim.recipient,
+                                         "Recipient Address L2");
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
@@ -138,13 +144,17 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_amount_ui_uint8(msg, context->lisk.body.claim.claim_amount, "Claim LSK");
+                    ret = set_amount_ui_uint8(msg,
+                                              context->lisk.body.claim.claim_amount,
+                                              "Claim LSK");
                     break;
                 case 1:
-                    ret = set_sender_address_ui(msg, context);
+                    ret = set_lisk_address_ui(msg, context);
                     break;
                 case 2:
-                    ret = set_address_ui(msg, context->lisk.body.claim.recipient, "Recipient Address L2");
+                    ret = set_address_ui(msg,
+                                         context->lisk.body.claim.recipient,
+                                         "Recipient Address L2");
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
@@ -153,10 +163,15 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case REWARD_CREATE_POSITION:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_amount_ui_uint8(msg, context->lisk.body.rewardCreatePosition.first, "Lock Amount");
+                    ret = set_amount_ui_uint8(msg,
+                                              context->lisk.body.rewardCreatePosition.first,
+                                              "Lock Amount");
                     break;
                 case 1:
-                    ret = set_decimal_ui_uint8(msg, context->lisk.body.rewardAddUnusedRewards.data.secound, "Duration (in days)");
+                    ret =
+                        set_decimal_ui_uint8(msg,
+                                             context->lisk.body.rewardAddUnusedRewards.data.secound,
+                                             "Duration (in days)");
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
@@ -166,13 +181,20 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case REWARD_FUND_STAKING_REWARDS:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_amount_ui_uint8(msg, context->lisk.body.rewardAddUnusedRewards.data.first, "Amount");
+                    ret = set_amount_ui_uint8(msg,
+                                              context->lisk.body.rewardAddUnusedRewards.data.first,
+                                              "Amount");
                     break;
                 case 1:
-                    ret = set_decimal_ui_uint8(msg, context->lisk.body.rewardAddUnusedRewards.data.secound, "Duration (in days)");
+                    ret =
+                        set_decimal_ui_uint8(msg,
+                                             context->lisk.body.rewardAddUnusedRewards.data.secound,
+                                             "Duration (in days)");
                     break;
                 case 2:
-                    ret = set_decimal_ui_uint8(msg, context->lisk.body.rewardAddUnusedRewards.delay, "Delay (in days)");
+                    ret = set_decimal_ui_uint8(msg,
+                                               context->lisk.body.rewardAddUnusedRewards.delay,
+                                               "Delay (in days)");
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
@@ -184,7 +206,9 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case REWARD_RESUME_UNLOCKING:
         case REWARD_DELETE_POSITIONS:
             if (msg->screenIndex < context->lisk.body.reward.lock_ids_len) {
-                ret = set_decimal_ui_arr(msg, &context->lisk.body.reward.lock_id[msg->screenIndex], "Lock ID");
+                ret = set_decimal_ui_arr(msg,
+                                         &context->lisk.body.reward.lock_id[msg->screenIndex],
+                                         "Lock ID");
             } else {
                 PRINTF("Received an invalid screenIndex\n");
             }
@@ -192,18 +216,24 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case REWARD_INC_LOCKING_AMOUNT:
             switch (msg->screenIndex) {
                 case 0:
-                    ret =
-                        set_decimal_ui_arr(msg, &context->lisk.body.rewardIncLockingAmount.first[0], "Lock ID");
+                    ret = set_decimal_ui_arr(msg,
+                                             &context->lisk.body.rewardIncLockingAmount.first[0],
+                                             "Lock ID");
                     break;
                 case 1:
-                    ret = set_amount_ui_arr(msg, &context->lisk.body.rewardIncLockingAmount.secound[0], "Increase Amount");
+                    ret = set_amount_ui_arr(msg,
+                                            &context->lisk.body.rewardIncLockingAmount.secound[0],
+                                            "Increase Amount");
                     break;
                 case 2:
-                    ret =
-                        set_decimal_ui_arr(msg, &context->lisk.body.rewardIncLockingAmount.first[1], "Lock ID");
+                    ret = set_decimal_ui_arr(msg,
+                                             &context->lisk.body.rewardIncLockingAmount.first[1],
+                                             "Lock ID");
                     break;
                 case 3:
-                    ret = set_amount_ui_arr(msg, &context->lisk.body.rewardIncLockingAmount.secound[1], "Increase Amount");
+                    ret = set_amount_ui_arr(msg,
+                                            &context->lisk.body.rewardIncLockingAmount.secound[1],
+                                            "Increase Amount");
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
@@ -212,18 +242,24 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case REWARD_EXTEND_DURATION:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_decimal_ui_arr(msg, &context->lisk.body.rewardExtendDuration.first[0], "Lock ID");
+                    ret = set_decimal_ui_arr(msg,
+                                             &context->lisk.body.rewardExtendDuration.first[0],
+                                             "Lock ID");
                     break;
                 case 1:
-                    ret =
-                        set_decimal_ui_arr(msg, &context->lisk.body.rewardExtendDuration.secound[0], "Duration");
+                    ret = set_decimal_ui_arr(msg,
+                                             &context->lisk.body.rewardExtendDuration.secound[0],
+                                             "Duration");
                     break;
                 case 2:
-                    ret = set_decimal_ui_arr(msg, &context->lisk.body.rewardExtendDuration.first[1], "Lock ID");
+                    ret = set_decimal_ui_arr(msg,
+                                             &context->lisk.body.rewardExtendDuration.first[1],
+                                             "Lock ID");
                     break;
                 case 3:
-                    ret =
-                        set_decimal_ui_arr(msg, &context->lisk.body.rewardExtendDuration.secound[1], "Duration");
+                    ret = set_decimal_ui_arr(msg,
+                                             &context->lisk.body.rewardExtendDuration.secound[1],
+                                             "Duration");
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
@@ -232,10 +268,12 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case CLAIM_AIRDROP:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_sender_address_ui(msg, context);
+                    ret = set_lisk_address_ui(msg, context);
                     break;
                 case 1:
-                    ret = set_amount_ui_uint8(msg, context->lisk.body.claim.claim_amount, "Claim Airdrop (LSK)");
+                    ret = set_amount_ui_uint8(msg,
+                                              context->lisk.body.claim.claim_amount,
+                                              "Claim Airdrop (LSK)");
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
@@ -244,10 +282,14 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case GOVERNOR_CAST_VOTE:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_decimal_ui_uint8(msg, context->lisk.body.governor.data.first, "Proposal ID");
+                    ret = set_decimal_ui_uint8(msg,
+                                               context->lisk.body.governor.data.first,
+                                               "Proposal ID");
                     break;
                 case 1:
-                    ret = set_decimal_ui_uint8(msg, context->lisk.body.governor.data.secound, "Support");
+                    ret = set_decimal_ui_uint8(msg,
+                                               context->lisk.body.governor.data.secound,
+                                               "Support");
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");
@@ -256,10 +298,14 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case GOVERNOR_CAST_VOTE_WITH_REASON:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_decimal_ui_uint8(msg, context->lisk.body.governor.data.first, "Proposal ID");
+                    ret = set_decimal_ui_uint8(msg,
+                                               context->lisk.body.governor.data.first,
+                                               "Proposal ID");
                     break;
                 case 1:
-                    ret = set_decimal_ui_uint8(msg, context->lisk.body.governor.data.secound, "Support");
+                    ret = set_decimal_ui_uint8(msg,
+                                               context->lisk.body.governor.data.secound,
+                                               "Support");
                     break;
                 case 2:
                     ret = set_reason_ui(msg, &context->lisk.body.governor.reason);
@@ -271,16 +317,24 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case GOVERNOR_PROPOSE:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_address_ui(msg, context->lisk.body.governorPropose.first[0].value, "Target Address");
+                    ret = set_address_ui(msg,
+                                         context->lisk.body.governorPropose.data.first[0].value,
+                                         "Target Address");
                     break;
                 case 1:
-                    ret = set_decimal_ui_arr(msg, &context->lisk.body.governorPropose.secound[0], "Value");
+                    ret = set_decimal_ui_arr(msg,
+                                             &context->lisk.body.governorPropose.data.secound[0],
+                                             "Value");
                     break;
                 case 2:
-                    ret = set_address_ui(msg, context->lisk.body.governorPropose.first[1].value, "Target Address");
+                    ret = set_address_ui(msg,
+                                         context->lisk.body.governorPropose.data.first[1].value,
+                                         "Target Address");
                     break;
                 case 3:
-                    ret = set_decimal_ui_arr(msg, &context->lisk.body.governorPropose.secound[1], "Value");
+                    ret = set_decimal_ui_arr(msg,
+                                             &context->lisk.body.governorPropose.data.secound[1],
+                                             "Value");
                     break;
                 default:
                     PRINTF("Received an invalid screenIndex\n");

@@ -373,9 +373,9 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             break;
         case LENGTH:
             if (!U2BE_from_parameter(msg->parameter,
-                                     &context->lisk.body.governorPropose.len) ||
-                context->lisk.body.governorPropose.len > 2 ||
-                context->lisk.body.governorPropose.len == 0) {
+                                     &context->lisk.body.governorPropose.data.len) ||
+                context->lisk.body.governorPropose.data.len > 2 ||
+                context->lisk.body.governorPropose.data.len == 0) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
             }
 
@@ -384,10 +384,10 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             context->next_param = TARGET_ADDRESS;
             break;
         case TARGET_ADDRESS:
-            copy_address(context->lisk.body.governorPropose.first[counter].value,
+            copy_address(context->lisk.body.governorPropose.data.first[counter].value,
                          msg->parameter,
-                         sizeof(context->lisk.body.governorPropose.first[counter].value));
-            if (counter + 1 < context->lisk.body.governorPropose.len) {
+                         sizeof(context->lisk.body.governorPropose.data.first[counter].value));
+            if (counter + 1 < context->lisk.body.governorPropose.data.len) {
                 counter++;
                 context->next_param = SECOND_TARGET_ADDRESS;
             } else {
@@ -395,26 +395,28 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             }
             break;
         case SECOND_TARGET_ADDRESS:
-            copy_address(context->lisk.body.governorPropose.first[counter].value,
+            copy_address(context->lisk.body.governorPropose.data.first[counter].value,
                          msg->parameter,
-                         sizeof(context->lisk.body.governorPropose.first[counter].value));
+                         sizeof(context->lisk.body.governorPropose.data.first[counter].value));
             counter = 0;
             context->next_param = PROPOSE_VALUE_LEN;
             break;
         case PROPOSE_VALUE_LEN:
             if (!U2BE_from_parameter(msg->parameter,
-                                     &context->lisk.body.governorPropose.len) ||
-                context->lisk.body.governorPropose.len > 2 ||
-                context->lisk.body.governorPropose.len == 0) {
+                                     &context->lisk.body.governorPropose.value_len) ||
+                context->lisk.body.governorPropose.value_len > 2 ||
+                context->lisk.body.governorPropose.value_len == 0 ||
+                context->lisk.body.governorPropose.value_len !=
+                    context->lisk.body.governorPropose.data.len) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
             }
             context->next_param = VALUE;
             break;
         case VALUE:
-            copy_parameter(context->lisk.body.governorPropose.secound[counter].value,
+            copy_parameter(context->lisk.body.governorPropose.data.secound[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
-            if (counter + 1 < context->lisk.body.governorPropose.len) {
+            if (counter + 1 < context->lisk.body.governorPropose.value_len) {
                 counter++;
                 context->next_param = SECOND_VALUE;
             } else {
@@ -422,7 +424,7 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             }
             break;
         case SECOND_VALUE:
-            copy_parameter(context->lisk.body.governorPropose.secound[counter].value,
+            copy_parameter(context->lisk.body.governorPropose.data.secound[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
             context->next_param = NONE;
