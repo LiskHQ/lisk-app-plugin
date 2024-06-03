@@ -74,13 +74,13 @@ typedef struct {
 
 typedef struct {
     arr_uint8_t first[2];
-    arr_uint8_t secound[2];
+    arr_uint8_t second[2];
     uint16_t len;
 } double_arr_with_len_t;
 
 typedef struct {
     uint8_t first[INT256_LENGTH];
-    uint8_t secound[INT256_LENGTH];
+    uint8_t second[INT256_LENGTH];
 } tuple_t;
 
 // This array will be automatically expanded to map all selector_t names with the correct value.
@@ -94,7 +94,7 @@ typedef enum {
     AMOUNT,
     PROOF,
     ID,
-    LENGTH,
+    ARRAY_LENGTH,
     LSK_ADDRESS,
     OFFSET,
     RECIPIENT,

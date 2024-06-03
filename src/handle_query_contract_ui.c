@@ -170,7 +170,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                 case 1:
                     ret =
                         set_decimal_ui_uint8(msg,
-                                             context->lisk.body.rewardAddUnusedRewards.data.secound,
+                                             context->lisk.body.rewardAddUnusedRewards.data.second,
                                              "Duration (in days)");
                     break;
                 default:
@@ -188,7 +188,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                 case 1:
                     ret =
                         set_decimal_ui_uint8(msg,
-                                             context->lisk.body.rewardAddUnusedRewards.data.secound,
+                                             context->lisk.body.rewardAddUnusedRewards.data.second,
                                              "Duration (in days)");
                     break;
                 case 2:
@@ -222,7 +222,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 1:
                     ret = set_amount_ui_arr(msg,
-                                            &context->lisk.body.rewardIncLockingAmount.secound[0],
+                                            &context->lisk.body.rewardIncLockingAmount.second[0],
                                             "Increase Amount");
                     break;
                 case 2:
@@ -232,7 +232,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 3:
                     ret = set_amount_ui_arr(msg,
-                                            &context->lisk.body.rewardIncLockingAmount.secound[1],
+                                            &context->lisk.body.rewardIncLockingAmount.second[1],
                                             "Increase Amount");
                     break;
                 default:
@@ -248,7 +248,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 1:
                     ret = set_decimal_ui_arr(msg,
-                                             &context->lisk.body.rewardExtendDuration.secound[0],
+                                             &context->lisk.body.rewardExtendDuration.second[0],
                                              "Duration");
                     break;
                 case 2:
@@ -258,7 +258,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 3:
                     ret = set_decimal_ui_arr(msg,
-                                             &context->lisk.body.rewardExtendDuration.secound[1],
+                                             &context->lisk.body.rewardExtendDuration.second[1],
                                              "Duration");
                     break;
                 default:
@@ -288,7 +288,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 1:
                     ret = set_decimal_ui_uint8(msg,
-                                               context->lisk.body.governor.data.secound,
+                                               context->lisk.body.governor.data.second,
                                                "Support");
                     break;
                 default:
@@ -304,7 +304,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 1:
                     ret = set_decimal_ui_uint8(msg,
-                                               context->lisk.body.governor.data.secound,
+                                               context->lisk.body.governor.data.second,
                                                "Support");
                     break;
                 case 2:
@@ -323,7 +323,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 1:
                     ret = set_decimal_ui_arr(msg,
-                                             &context->lisk.body.governorPropose.data.secound[0],
+                                             &context->lisk.body.governorPropose.data.second[0],
                                              "Value");
                     break;
                 case 2:
@@ -333,7 +333,7 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
                     break;
                 case 3:
                     ret = set_decimal_ui_arr(msg,
-                                             &context->lisk.body.governorPropose.data.secound[1],
+                                             &context->lisk.body.governorPropose.data.second[1],
                                              "Value");
                     break;
                 default:
