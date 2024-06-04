@@ -7,7 +7,7 @@ endif()
 # project information
 project(Fuzzer
         VERSION 1.0
-        DESCRIPTION "Contract parser of Boilerplate plugin app"
+        DESCRIPTION "Contract parser of Lisk plugin app"
         LANGUAGES C)
 
 # guard against bad build-type strings
@@ -51,7 +51,7 @@ set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src")
 set(ETH_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../ethereum-plugin-sdk")
 
 add_compile_definitions(
-    APPNAME="PluginBoilerplate"
+    APPNAME="Lisk"
 )
 
 add_compile_definitions(
