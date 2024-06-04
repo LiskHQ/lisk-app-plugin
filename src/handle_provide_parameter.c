@@ -17,9 +17,9 @@ static void handle_claim_regular_account(ethPluginProvideParameter_t *msg, conte
             copy_parameter(context->lisk.body.claim.public_key,
                            msg->parameter,
                            sizeof(context->lisk.body.claim.public_key));
-            context->next_param = CLAIM_AMOUNT;
+            context->next_param = AMOUNT;
             break;
-        case CLAIM_AMOUNT:  // _amount
+        case AMOUNT:  // _amount
             copy_parameter(context->lisk.body.claim.claim_amount,
                            msg->parameter,
                            sizeof(context->lisk.body.claim.claim_amount));
@@ -29,9 +29,9 @@ static void handle_claim_regular_account(ethPluginProvideParameter_t *msg, conte
             copy_address(context->lisk.body.claim.recipient,
                          msg->parameter,
                          sizeof(context->lisk.body.claim.recipient));
-            context->next_param = ED25519_SIGNATURE;
+            context->next_param = SKIPED_PARAMETER;
             break;
-        case ED25519_SIGNATURE:  // _sig
+        case SKIPED_PARAMETER:  // ED25519_SIGNATURE
             context->next_param = UNEXPECTED_PARAMETER;
             break;
         case UNEXPECTED_PARAMETER:
@@ -52,9 +52,9 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
             copy_parameter(context->lisk.body.claim.lsk_address,
                            msg->parameter,
                            sizeof(context->lisk.body.claim.lsk_address));
-            context->next_param = CLAIM_AMOUNT;
+            context->next_param = AMOUNT;
             break;
-        case CLAIM_AMOUNT:  // _amount
+        case AMOUNT:  // _amount
             copy_parameter(context->lisk.body.claim.claim_amount,
                            msg->parameter,
                            sizeof(context->lisk.body.claim.claim_amount));
@@ -67,9 +67,9 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
             copy_address(context->lisk.body.claim.recipient,
                          msg->parameter,
                          sizeof(context->lisk.body.claim.recipient));
-            context->next_param = ED25519_SIGNATURES;
+            context->next_param = SKIPED_PARAMETER;
             break;
-        case ED25519_SIGNATURES:  // _sigs
+        case SKIPED_PARAMETER:  // ED25519_SIGNATURES
             context->next_param = UNEXPECTED_PARAMETER;
             break;
         case UNEXPECTED_PARAMETER:
@@ -84,15 +84,15 @@ static void handle_claim_multisig_account(ethPluginProvideParameter_t *msg, cont
 static void handle_reward_create_position(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
         case AMOUNT:  // amount
-            copy_parameter(context->lisk.body.rewardCreatePosition.lock_amount,
+            copy_parameter(context->lisk.body.rewardCreatePosition.first,
                            msg->parameter,
-                           sizeof(context->lisk.body.rewardCreatePosition.lock_amount));
+                           sizeof(context->lisk.body.rewardCreatePosition.first));
             context->next_param = DURATION;
             break;
         case DURATION:  // lockingDuration
-            copy_parameter(context->lisk.body.rewardCreatePosition.lock_duration,
+            copy_parameter(context->lisk.body.rewardCreatePosition.second,
                            msg->parameter,
-                           sizeof(context->lisk.body.rewardCreatePosition.lock_duration));
+                           sizeof(context->lisk.body.rewardCreatePosition.second));
             context->next_param = UNEXPECTED_PARAMETER;
             break;
         case UNEXPECTED_PARAMETER:
@@ -107,18 +107,18 @@ static void handle_reward_create_position(ethPluginProvideParameter_t *msg, cont
 static void handle_lock_ids_array(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
         case OFFSET:
-            context->next_param = LOCK_IDS_LEN;
+            context->next_param = ARRAY_LENGTH;
             break;
-        case LOCK_IDS_LEN:
+        case ARRAY_LENGTH:
             if (!U2BE_from_parameter(msg->parameter, &context->lisk.body.reward.lock_ids_len) ||
                 context->lisk.body.reward.lock_ids_len > 4 ||
                 context->lisk.body.reward.lock_ids_len == 0) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
             }
 
-            context->next_param = LOCK_ID;
+            context->next_param = ID;
             break;
-        case LOCK_ID:
+        case ID:
             copy_parameter(context->lisk.body.reward.lock_id[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
@@ -141,9 +141,9 @@ static void handle_lock_ids_array(ethPluginProvideParameter_t *msg, context_t *c
 static void handle_increase_locking_amount(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
         case OFFSET:
-            context->next_param = INCREASE_LEN;
+            context->next_param = ARRAY_LENGTH;
             break;
-        case INCREASE_LEN:
+        case ARRAY_LENGTH:
             if (!U2BE_from_parameter(msg->parameter,
                                      &context->lisk.body.rewardIncLockingAmount.len) ||
                 context->lisk.body.rewardIncLockingAmount.len > 2 ||
@@ -151,22 +151,22 @@ static void handle_increase_locking_amount(ethPluginProvideParameter_t *msg, con
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
             }
 
-            context->next_param = LOCK_ID;
+            context->next_param = ID;
             break;
-        case LOCK_ID:
-            copy_parameter(context->lisk.body.rewardIncLockingAmount.lock_id[counter].value,
+        case ID:
+            copy_parameter(context->lisk.body.rewardIncLockingAmount.first[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
             context->next_param = AMOUNT;
             break;
         case AMOUNT:
-            copy_parameter(context->lisk.body.rewardIncLockingAmount.amount[counter].value,
+            copy_parameter(context->lisk.body.rewardIncLockingAmount.second[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
             if (context->lisk.body.rewardIncLockingAmount.len > 1 &&
                 counter < context->lisk.body.rewardIncLockingAmount.len - 1) {
                 counter++;
-                context->next_param = LOCK_ID;
+                context->next_param = ID;
             } else {
                 context->next_param = NONE;
             }
@@ -183,9 +183,9 @@ static void handle_increase_locking_amount(ethPluginProvideParameter_t *msg, con
 static void handle_extend_duration(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
         case OFFSET:
-            context->next_param = INCREASE_LEN;
+            context->next_param = ARRAY_LENGTH;
             break;
-        case INCREASE_LEN:
+        case ARRAY_LENGTH:
             if (!U2BE_from_parameter(msg->parameter,
                                      &context->lisk.body.rewardExtendDuration.len) ||
                 context->lisk.body.rewardExtendDuration.len > 2 ||
@@ -193,22 +193,22 @@ static void handle_extend_duration(ethPluginProvideParameter_t *msg, context_t *
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
             }
 
-            context->next_param = LOCK_ID;
+            context->next_param = ID;
             break;
-        case LOCK_ID:
-            copy_parameter(context->lisk.body.rewardExtendDuration.lock_id[counter].value,
+        case ID:
+            copy_parameter(context->lisk.body.rewardExtendDuration.first[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
             context->next_param = DURATION;
             break;
         case DURATION:
-            copy_parameter(context->lisk.body.rewardExtendDuration.duration[counter].value,
+            copy_parameter(context->lisk.body.rewardExtendDuration.second[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
             if (context->lisk.body.rewardExtendDuration.len > 1 &&
                 counter < context->lisk.body.rewardExtendDuration.len - 1) {
                 counter++;
-                context->next_param = LOCK_ID;
+                context->next_param = ID;
             } else {
                 context->next_param = NONE;
             }
@@ -225,15 +225,15 @@ static void handle_extend_duration(ethPluginProvideParameter_t *msg, context_t *
 static void handle_add_unused_rewards(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
         case AMOUNT:
-            copy_parameter(context->lisk.body.rewardAddUnusedRewards.amount,
+            copy_parameter(context->lisk.body.rewardAddUnusedRewards.data.first,
                            msg->parameter,
-                           sizeof(context->lisk.body.rewardAddUnusedRewards.amount));
+                           sizeof(context->lisk.body.rewardAddUnusedRewards.data.first));
             context->next_param = DURATION;
             break;
         case DURATION:
-            copy_parameter(context->lisk.body.rewardAddUnusedRewards.duration,
+            copy_parameter(context->lisk.body.rewardAddUnusedRewards.data.second,
                            msg->parameter,
-                           sizeof(context->lisk.body.rewardAddUnusedRewards.duration));
+                           sizeof(context->lisk.body.rewardAddUnusedRewards.data.second));
             context->next_param = DELAY;
             break;
         case DELAY:
@@ -257,15 +257,15 @@ static void handle_claim_airdrop(ethPluginProvideParameter_t *msg, context_t *co
             copy_parameter(context->lisk.body.claim.lsk_address,
                            msg->parameter,
                            sizeof(context->lisk.body.claim.lsk_address));
-            context->next_param = CLAIM_AMOUNT;
+            context->next_param = AMOUNT;
             break;
-        case CLAIM_AMOUNT:  // amount
+        case AMOUNT:  // amount
             copy_parameter(context->lisk.body.claim.claim_amount,
                            msg->parameter,
                            sizeof(context->lisk.body.claim.claim_amount));
-            context->next_param = PROOF;
+            context->next_param = SKIPED_PARAMETER;
             break;
-        case PROOF:  // merkleProof
+        case SKIPED_PARAMETER:  // merkleProof
             context->next_param = NONE;
             break;
         case NONE:
@@ -279,14 +279,16 @@ static void handle_claim_airdrop(ethPluginProvideParameter_t *msg, context_t *co
 
 static void handle_governor_cast_vote(ethPluginProvideParameter_t *msg, context_t *context) {
     switch (context->next_param) {
-        case PROPOSAL_ID:  // proposalId
-            copy_parameter(context->lisk.body.governor.proposal_id, msg->parameter, INT256_LENGTH);
+        case ID:  // proposalId
+            copy_parameter(context->lisk.body.governor.data.first,
+                           msg->parameter,
+                           sizeof(context->lisk.body.governor.data.first));
             context->next_param = SUPPORT;
             break;
         case SUPPORT:  // support
-            copy_parameter(context->lisk.body.governor.support,
+            copy_parameter(context->lisk.body.governor.data.second,
                            msg->parameter,
-                           sizeof(context->lisk.body.governor.support));
+                           sizeof(context->lisk.body.governor.data.second));
             context->next_param = NONE;
             break;
         case NONE:
@@ -302,20 +304,22 @@ static void handle_governor_cast_vote_with_reason(ethPluginProvideParameter_t *m
                                                   context_t *context) {
     uint16_t tmp;
     switch (context->next_param) {
-        case PROPOSAL_ID:  // proposalId
-            copy_parameter(context->lisk.body.governor.proposal_id, msg->parameter, INT256_LENGTH);
+        case ID:  // proposalId
+            copy_parameter(context->lisk.body.governor.data.first,
+                           msg->parameter,
+                           sizeof(context->lisk.body.governor.data.first));
             context->next_param = SUPPORT;
             break;
         case SUPPORT:  // support
-            copy_parameter(context->lisk.body.governor.support,
+            copy_parameter(context->lisk.body.governor.data.second,
                            msg->parameter,
-                           sizeof(context->lisk.body.governor.support));
+                           sizeof(context->lisk.body.governor.data.second));
             context->next_param = OFFSET;
             break;
         case OFFSET:
-            context->next_param = REASON_LENGTH;
+            context->next_param = ARRAY_LENGTH;
             break;
-        case REASON_LENGTH:  // reason
+        case ARRAY_LENGTH:  // reason
             if (!U2BE_from_parameter(msg->parameter, &tmp)) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
@@ -329,9 +333,9 @@ static void handle_governor_cast_vote_with_reason(ethPluginProvideParameter_t *m
             }
 
             max_counter = counter;
-            context->next_param = REASON;
+            context->next_param = VALUE;
             break;
-        case REASON:
+        case VALUE:
             if (counter == max_counter) {
                 copy_text(context->lisk.body.governor.reason.value,
                           context->lisk.body.governor.reason.len,
@@ -365,13 +369,13 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
         case OFFSET:
             context->offset = U2BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->offset));
             context->go_to_offset = true;
-            context->next_param = PROPOSE_TARGET_LEN;
+            context->next_param = ARRAY_LENGTH;
             break;
-        case PROPOSE_TARGET_LEN:
+        case ARRAY_LENGTH:
             if (!U2BE_from_parameter(msg->parameter,
-                                     &context->lisk.body.governorPropose.target_len) ||
-                context->lisk.body.governorPropose.target_len > 2 ||
-                context->lisk.body.governorPropose.target_len == 0) {
+                                     &context->lisk.body.governorPropose.data.len) ||
+                context->lisk.body.governorPropose.data.len > 2 ||
+                context->lisk.body.governorPropose.data.len == 0) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
             }
 
@@ -380,10 +384,10 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             context->next_param = TARGET_ADDRESS;
             break;
         case TARGET_ADDRESS:
-            copy_address(context->lisk.body.governorPropose.targets[counter].value,
+            copy_address(context->lisk.body.governorPropose.data.first[counter].value,
                          msg->parameter,
-                         sizeof(context->lisk.body.governorPropose.targets[counter].value));
-            if (counter + 1 < context->lisk.body.governorPropose.target_len) {
+                         sizeof(context->lisk.body.governorPropose.data.first[counter].value));
+            if (counter + 1 < context->lisk.body.governorPropose.data.len) {
                 counter++;
                 context->next_param = SECOND_TARGET_ADDRESS;
             } else {
@@ -391,9 +395,9 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             }
             break;
         case SECOND_TARGET_ADDRESS:
-            copy_address(context->lisk.body.governorPropose.targets[counter].value,
+            copy_address(context->lisk.body.governorPropose.data.first[counter].value,
                          msg->parameter,
-                         sizeof(context->lisk.body.governorPropose.targets[counter].value));
+                         sizeof(context->lisk.body.governorPropose.data.first[counter].value));
             counter = 0;
             context->next_param = PROPOSE_VALUE_LEN;
             break;
@@ -402,14 +406,14 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
                                      &context->lisk.body.governorPropose.value_len) ||
                 context->lisk.body.governorPropose.value_len > 2 ||
                 context->lisk.body.governorPropose.value_len == 0 ||
-                context->lisk.body.governorPropose.target_len !=
-                    context->lisk.body.governorPropose.value_len) {
+                context->lisk.body.governorPropose.value_len !=
+                    context->lisk.body.governorPropose.data.len) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
             }
             context->next_param = VALUE;
             break;
         case VALUE:
-            copy_parameter(context->lisk.body.governorPropose.values[counter].value,
+            copy_parameter(context->lisk.body.governorPropose.data.second[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
             if (counter + 1 < context->lisk.body.governorPropose.value_len) {
@@ -420,7 +424,7 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             }
             break;
         case SECOND_VALUE:
-            copy_parameter(context->lisk.body.governorPropose.values[counter].value,
+            copy_parameter(context->lisk.body.governorPropose.data.second[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
             context->next_param = NONE;

@@ -34,7 +34,7 @@ void handle_finalize(ethPluginFinalize_t *msg) {
             msg->numScreens = 3;
             break;
         case GOVERNOR_PROPOSE:
-            msg->numScreens = context->lisk.body.governorPropose.target_len * 2;
+            msg->numScreens = context->lisk.body.governorPropose.value_len * 2;
             break;
         default:
             msg->result = ETH_PLUGIN_RESULT_ERROR;

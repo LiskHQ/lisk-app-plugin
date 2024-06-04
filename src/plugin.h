@@ -67,6 +67,22 @@ typedef struct {
     uint8_t value[ADDRESS_LENGTH];
 } arr_address_t;
 
+typedef struct {
+    uint8_t len;
+    uint8_t value[PARAMETER_LENGTH];
+} string_uint8_t;
+
+typedef struct {
+    arr_uint8_t first[2];
+    arr_uint8_t second[2];
+    uint16_t len;
+} double_arr_with_len_t;
+
+typedef struct {
+    uint8_t first[INT256_LENGTH];
+    uint8_t second[INT256_LENGTH];
+} tuple_t;
+
 // This array will be automatically expanded to map all selector_t names with the correct value.
 // Do not modify !
 extern const uint32_t SELECTORS[SELECTOR_COUNT];
@@ -75,48 +91,35 @@ extern const uint32_t SELECTORS[SELECTOR_COUNT];
 // EDIT THIS: Adapt the parameter names here.
 typedef enum {
     // Common parameters
+    AMOUNT,
     PROOF,
-    CLAIM_AMOUNT,
+    ID,
+    ARRAY_LENGTH,
+    LSK_ADDRESS,
+    OFFSET,
     RECIPIENT,
+    SKIPED_PARAMETER,
     UNEXPECTED_PARAMETER,
     NONE,
 
     // Claim regular account parameters
     PUBLIC_KEY,
-    ED25519_SIGNATURE,
 
     // Claim multi-sig account parameters
     MULTISIG_KEYS,
-    LSK_ADDRESS,
-    ED25519_SIGNATURES,
 
     // Reward contract parameters
-    AMOUNT,
-    DURATION,
-    LOCK_ID,
-    LOCK_IDS_LEN,
-    LOCK_ID_NEXT,
-    INCREASE_LEN,
-    OFFSET,
     DELAY,
+    DURATION,
 
     // Governor contract parameters
-    PROPOSAL_ID,
-    SUPPORT,
-    REASON,
-    REASON_LENGTH,
-    PROPOSE_TARGET_LEN,
     PROPOSE_VALUE_LEN,
-    TARGET_ADDRESS,
     SECOND_TARGET_ADDRESS,
-    VALUE,
     SECOND_VALUE,
+    SUPPORT,
+    TARGET_ADDRESS,
+    VALUE,
 } parameter;
-
-typedef struct {
-    uint8_t len;
-    uint8_t value[PARAMETER_LENGTH];
-} string_uint8_t;
 
 typedef struct {
     union {
@@ -127,41 +130,25 @@ typedef struct {
             uint8_t lsk_address[LISK_ADDRESS_LENGTH];
         } claim;
 
-        struct {
-            uint8_t lock_amount[INT256_LENGTH];
-            uint8_t lock_duration[INT256_LENGTH];
-        } rewardCreatePosition;
-
+        tuple_t rewardCreatePosition;
         struct {
             uint16_t lock_ids_len;
             arr_uint8_t lock_id[4];
         } reward;
+        double_arr_with_len_t rewardIncLockingAmount;
+        double_arr_with_len_t rewardExtendDuration;
         struct {
-            arr_uint8_t lock_id[2];
-            arr_uint8_t amount[2];
-            uint16_t len;
-        } rewardIncLockingAmount;
-        struct {
-            arr_uint8_t lock_id[2];
-            arr_uint8_t duration[2];
-            uint16_t len;
-        } rewardExtendDuration;
-        struct {
-            uint8_t amount[INT256_LENGTH];
-            uint8_t duration[INT256_LENGTH];
+            tuple_t data;
             uint8_t delay[INT256_LENGTH];
         } rewardAddUnusedRewards;
 
         struct {
-            uint8_t proposal_id[INT256_LENGTH];
-            uint8_t support[INT256_LENGTH];
+            tuple_t data;
             string_uint8_t reason;
         } governor;
         struct {
-            uint16_t target_len;
+            double_arr_with_len_t data;
             uint16_t value_len;
-            arr_address_t targets[2];
-            arr_uint8_t values[2];
         } governorPropose;
 
     } body;
