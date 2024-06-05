@@ -119,6 +119,10 @@ static void handle_lock_ids_array(ethPluginProvideParameter_t *msg, context_t *c
             context->next_param = ID;
             break;
         case ID:
+            if (counter >= context->lisk.body.reward.lock_ids_len) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                break;
+            }
             copy_parameter(context->lisk.body.reward.lock_id[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
@@ -154,12 +158,20 @@ static void handle_increase_locking_amount(ethPluginProvideParameter_t *msg, con
             context->next_param = ID;
             break;
         case ID:
+            if (counter >= context->lisk.body.rewardIncLockingAmount.len) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                break;
+            }
             copy_parameter(context->lisk.body.rewardIncLockingAmount.first[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
             context->next_param = AMOUNT;
             break;
         case AMOUNT:
+            if (counter >= context->lisk.body.rewardIncLockingAmount.len) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                break;
+            }
             copy_parameter(context->lisk.body.rewardIncLockingAmount.second[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
@@ -196,12 +208,20 @@ static void handle_extend_duration(ethPluginProvideParameter_t *msg, context_t *
             context->next_param = ID;
             break;
         case ID:
+            if (counter >= context->lisk.body.rewardExtendDuration.len) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                break;
+            }
             copy_parameter(context->lisk.body.rewardExtendDuration.first[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
             context->next_param = DURATION;
             break;
         case DURATION:
+            if (counter >= context->lisk.body.rewardExtendDuration.len) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                break;
+            }
             copy_parameter(context->lisk.body.rewardExtendDuration.second[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
@@ -384,6 +404,10 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             context->next_param = TARGET_ADDRESS;
             break;
         case TARGET_ADDRESS:
+            if (counter >= context->lisk.body.governorPropose.data.len) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                break;
+            }
             copy_address(context->lisk.body.governorPropose.data.first[counter].value,
                          msg->parameter,
                          sizeof(context->lisk.body.governorPropose.data.first[counter].value));
@@ -395,6 +419,10 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             }
             break;
         case SECOND_TARGET_ADDRESS:
+            if (counter >= context->lisk.body.governorPropose.data.len) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                break;
+            }
             copy_address(context->lisk.body.governorPropose.data.first[counter].value,
                          msg->parameter,
                          sizeof(context->lisk.body.governorPropose.data.first[counter].value));
@@ -413,6 +441,10 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             context->next_param = VALUE;
             break;
         case VALUE:
+            if (counter >= context->lisk.body.governorPropose.value_len) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                break;
+            }
             copy_parameter(context->lisk.body.governorPropose.data.second[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
@@ -424,6 +456,10 @@ static void handle_governor_propose(ethPluginProvideParameter_t *msg, context_t 
             }
             break;
         case SECOND_VALUE:
+            if (counter >= context->lisk.body.governorPropose.value_len) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                break;
+            }
             copy_parameter(context->lisk.body.governorPropose.data.second[counter].value,
                            msg->parameter,
                            INT256_LENGTH);
