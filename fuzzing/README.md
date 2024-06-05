@@ -4,7 +4,7 @@
 
 Fuzzing allows us to test how a program behaves when provided with invalid, unexpected, or random data as input.
 
-In the case of `app-plugin-boilerplate` we want to test the code that is responsible for handling the contract data.
+In the case of `lisk-app-plugin` we want to test the code that is responsible for handling the contract data.
 The fuzzer needs to implement `int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)`, which provides an array of random bytes that can be used to simulate a serialized transaction.
 If the application crashes, or a [sanitizer](https://github.com/google/sanitizers) detects any kind of access violation, the fuzzing process is stopped, a report regarding the vulnerability is shown, and the input that triggered the bug is written to disk under the name `crash-*`. The vulnerable input file created can be passed as an argument to the fuzzer to triage the issue.
 
@@ -70,13 +70,13 @@ The principle is to build the container, and run it to perform the fuzzing.
 # Prepare directory tree
 mkdir fuzzing/{corpus,out}
 # Container generation
-docker build -t app-plugin-boilerplate --file .clusterfuzzlite/Dockerfile .
+docker build -t lisk-app-plugin --file .clusterfuzzlite/Dockerfile .
 ```
 
 ### Compilation
 
 ```console
-docker run --rm --privileged -e FUZZING_LANGUAGE=c -v "$(realpath .)/fuzzing/out:/out" -ti app-plugin-boilerplate
+docker run --rm --privileged -e FUZZING_LANGUAGE=c -v "$(realpath .)/fuzzing/out:/out" -ti lisk-app-plugin
 ```
 
 ### Run
