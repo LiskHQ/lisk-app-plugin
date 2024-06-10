@@ -17,7 +17,7 @@ def test_claim_regular_account(backend, firmware, navigator, test_name, wallet_a
             bytes.fromhex("6f3f752b8381917128bc5145128af0d83e3d7547c83a2d28b20bb04b8952f4a6")
         ],
         bytes.fromhex("f83c23fb2532ad248e107ebd5312f1f78f742488fdec815c94d6b63aa7682eb6"),
-        86511774,
+        1000000000, # 10 LSK to be claimed
         bytes.fromhex("00bb7b59073f45177edf430090d5aa3c44aa7f23"),
         (
             bytes.fromhex("664272cc25b0d20adf551b7a015795b9ad4ab23a4a19a509642bc042c00e5256"),
@@ -37,7 +37,7 @@ def test_claim_multisig_account(backend, firmware, navigator, test_name, wallet_
             bytes.fromhex("629779421eb7409cb867a7d8ee45aadc89a8b86f24423b737e1430832a78f026")
         ],
         bytes.fromhex("77abc2dd8ca5021dbb8e91e63f574b1e440764d2"),
-        4915507196,
+        1000000000, # 10 LSK to be claimed
         (
             [
             ],

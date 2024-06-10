@@ -8,7 +8,7 @@ contract = load_contract(
 
 def test_create_position(backend, firmware, navigator, test_name, wallet_addr):
     data = contract.encodeABI("createPosition", [
-            86511774,
+            200000000000000000,
             100
     ])
 
