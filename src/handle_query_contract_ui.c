@@ -33,6 +33,18 @@ static bool set_amount_ui_uint8(ethQueryContractUI_t *msg,
     return amountToString(amount, INT256_LENGTH, decimals, ticker, msg->msg, msg->msgLength);
 }
 
+// Set UI with custom title for amount (Lisk L1) screen with uint8 data.
+static bool set_amount_l1_ui_uint8(ethQueryContractUI_t *msg,
+                                   const uint8_t *amount,
+                                   const char *title) {
+    strlcpy(msg->title, title, msg->titleLength);
+
+    uint8_t decimals = 8;  // 1 LSK = 10**8 Beddows on Lisk L1 (legacy)
+    const char *ticker = "LSK";
+
+    return amountToString(amount, INT256_LENGTH, decimals, ticker, msg->msg, msg->msgLength);
+}
+
 // Set UI with custom title for amount screen with uint8 data.
 static bool set_amount_ui_arr(ethQueryContractUI_t *msg,
                               const arr_uint8_t *amount,
@@ -125,9 +137,9 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case CLAIM_REGULAR_ACCOUNT:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_amount_ui_uint8(msg,
-                                              context->lisk.body.claim.claim_amount,
-                                              "Claim LSK");
+                    ret = set_amount_l1_ui_uint8(msg,
+                                                 context->lisk.body.claim.claim_amount,
+                                                 "Claim LSK");
                     break;
                 case 1:
                     ret = set_sender_public_key_ui(msg, context);
@@ -144,9 +156,9 @@ void handle_query_contract_ui(ethQueryContractUI_t *msg) {
         case CLAIM_MULTI_SIGNATURE_ACCOUNT:
             switch (msg->screenIndex) {
                 case 0:
-                    ret = set_amount_ui_uint8(msg,
-                                              context->lisk.body.claim.claim_amount,
-                                              "Claim LSK");
+                    ret = set_amount_l1_ui_uint8(msg,
+                                                 context->lisk.body.claim.claim_amount,
+                                                 "Claim LSK");
                     break;
                 case 1:
                     ret = set_lisk_address_ui(msg, context);

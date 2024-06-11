@@ -9,7 +9,7 @@ contract = load_contract(
 def test_claim_airdrop(backend, firmware, navigator, test_name, wallet_addr):
     data = contract.encodeABI("claimAirdrop", [
         bytes.fromhex("77abc2dd8ca5021dbb8e91e63f574b1e440764d2"),
-        4915507196,
+        20000000000000000000,
         [
             bytes.fromhex("9ca797d905e78f38685b61f62521632ef486bc6ce3e707d2af41b7fe146303c1"),
         ]
